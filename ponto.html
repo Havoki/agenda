@@ -3,228 +3,139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FacePonto | Teste de câmera</title>
+<title>FacePonto SaaS</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <style>
-:root{--bg:#f3f6fb;--card:#fff;--text:#182235;--muted:#6b7280;--primary:#4f46e5;--ok:#087f40;--danger:#b42318;--line:#e2e8f0}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,Arial}
-header{background:#151b2c;color:#fff;padding:20px;display:flex;justify-content:space-between;align-items:center}
-header h1{font-size:20px;margin:0}
-header span{font-size:13px;color:#cbd5e1}
-main{max-width:920px;margin:28px auto;padding:0 16px}
-.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 5px 18px #1720330b}
-h2{font-size:19px;margin:0 0 8px}
-h3{font-size:16px;margin:0 0 10px}
-.muted{color:var(--muted);font-size:13px;line-height:1.5}
-.camera{background:#0b1220;border-radius:13px;overflow:hidden;position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;margin-top:16px}
-video{display:block;width:100%;max-height:500px;object-fit:cover;transform:scaleX(-1)}
-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.camera-message{position:absolute;background:#0b1220dd;color:#fff;padding:10px 14px;border-radius:9px;text-align:center;max-width:85%}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer}
-.primary{background:var(--primary);color:#fff}
-.secondary{background:#e9eef6;color:var(--text)}
-.success{background:var(--ok);color:#fff}
-button:disabled{opacity:.5;cursor:not-allowed}
-.status{padding:12px;border-radius:10px;background:#eef2ff;color:#3730a3;margin:14px 0;line-height:1.45}
-.status.ok{background:#e8f7ee;color:#166534}
-.status.error{background:#ffeded;color:var(--danger)}
-.status.warn{background:#fff6d8;color:#775500}
-.steps{display:grid;gap:12px;margin-top:18px}
-.step{display:flex;gap:12px;align-items:flex-start}
-.number{background:#e0e7ff;color:#3730a3;border-radius:50%;width:27px;height:27px;display:grid;place-items:center;font-weight:800;flex:none}
-code{background:#eef2f7;border-radius:5px;padding:2px 5px}
-ul{padding-left:20px;line-height:1.7}
-.device{font-size:13px;border-bottom:1px solid var(--line);padding:9px 0}
-.hidden{display:none!important}
-@media(max-width:720px){.grid{grid-template-columns:1fr}.camera{min-height:240px}header{gap:10px;align-items:flex-start;flex-direction:column}}
+:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--mut:#697586;--line:#e4e9f0;--pri:#4f46e5;--dark:#151b2c;--ok:#07883e;--bad:#c62828;--warn:#9a6700}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,system-ui,Arial,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer;border:0}.top{height:64px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:15px}.brand{font-size:20px;font-weight:800}.brand span{color:#818cf8}.top small{color:#b8c0d1}.layout{display:flex;min-height:calc(100vh - 64px)}aside{width:230px;background:#20283b;color:#dbe2f0;padding:18px 12px}.nav{display:grid;gap:5px}.nav button{background:transparent;color:#dbe2f0;text-align:left;padding:12px;border-radius:9px}.nav button.active,.nav button:hover{background:#343e58;color:#fff}.content{max-width:1250px;width:100%;padding:24px;margin:auto}.view{display:none}.view.active{display:block}.title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.title h1{margin:0;font-size:25px}.muted{color:var(--mut);font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 3px 12px #17203308}.stat{display:flex;justify-content:space-between;align-items:center}.stat b{font-size:28px;color:var(--pri)}.stat strong{font-size:13px}.grid2{display:grid;grid-template-columns:1.05fr 1fr;gap:16px;margin-top:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field{display:grid;gap:6px;margin-bottom:12px}.field label{font-weight:650;font-size:13px}.field input,.field select{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;outline:none;background:#fff}.field input:focus,.field select:focus{border-color:var(--pri)}.btn{padding:10px 14px;border-radius:9px;font-weight:700;background:var(--pri);color:#fff}.btn.secondary{background:#e9edf5;color:var(--text)}.btn.ok{background:var(--ok)}.btn.danger{background:var(--bad)}.btn.warn{background:#f4c95d;color:#453200}.btn:disabled{opacity:.5;cursor:not-allowed}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .auto{flex:0 0 auto}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{font-size:11px;color:var(--mut);text-transform:uppercase}.tag{display:inline-block;padding:4px 8px;border-radius:99px;background:#e9efff;color:#3e42ae;font-size:12px;font-weight:700}.tag.ok{background:#e4f7eb;color:var(--ok)}.tag.warn{background:#fff3ce;color:var(--warn)}.notice{padding:12px;border-radius:10px;background:#fff7db;color:#715200;margin:12px 0;font-size:13px}.success{background:#e7f7ed;color:#146b36}.dangerbox{background:#ffebeb;color:#8d2222}.modal{position:fixed;inset:0;background:#101827aa;display:none;align-items:center;justify-content:center;padding:16px;z-index:4}.modal.open{display:flex}.modalbox{background:#fff;border-radius:16px;width:min(720px,100%);max-height:92vh;overflow:auto;padding:22px}.modalhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modalhead h2{margin:0}.close{background:#edf0f5;border-radius:8px;padding:7px 11px}.camera{background:#101827;border-radius:12px;overflow:hidden;position:relative;min-height:280px;display:flex;align-items:center;justify-content:center}.camera video{width:100%;display:block;max-height:430px;object-fit:cover;transform:scaleX(-1)}.camera canvas{position:absolute;inset:0;width:100%;height:100%}.camera .cammsg{position:absolute;color:#fff;background:#101827bb;border-radius:8px;padding:8px 12px}.facebox{border:2px solid #42dc8a;position:absolute;display:none}.empty{padding:28px;text-align:center;color:var(--mut)}pre{background:#111827;color:#dbeafe;padding:14px;border-radius:10px;overflow:auto;font-size:12px;white-space:pre-wrap}.hide{display:none!important}#toast{position:fixed;z-index:9;bottom:22px;left:50%;transform:translateX(-50%);background:#172033;color:#fff;padding:11px 16px;border-radius:9px;opacity:0;transition:.25s;pointer-events:none}#toast.on{opacity:1}.mobileMenu{display:none}
+@media(max-width:850px){aside{width:62px;padding:14px 8px}.nav button{font-size:0;text-align:center}.nav button:first-letter{font-size:20px}.content{padding:16px}.grid{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}.top{padding:0 15px}}
+@media(max-width:500px){.grid,.grid3{grid-template-columns:1fr}.title{align-items:flex-start;flex-direction:column}.top small{display:none}}
 </style>
 </head>
 <body>
-<header>
-<h1>FacePonto | Diagnóstico da câmera</h1>
-<span id="secure">Verificando ambiente...</span>
-</header>
-
-<main>
+<header class="top"><div class="brand">Face<span>Ponto</span></div><small id="connection">Modo local</small><button class="btn secondary mobileMenu" onclick="openModal('settingsModal')">Configurações</button></header>
+<div class="layout">
+<aside><nav class="nav">
+<button class="active" data-view="dashboard">▣ &nbsp; Painel</button>
+<button data-view="clock">◉ &nbsp; Bater ponto</button>
+<button data-view="employees">♙ &nbsp; Funcionários</button>
+<button data-view="companies">▤ &nbsp; Empresas</button>
+<button data-view="reports">▤ &nbsp; Relatórios</button>
+<button data-view="settings">⚙ &nbsp; Configurações</button>
+</nav></aside>
+<main class="content">
+<section id="dashboard" class="view active">
+<div class="title"><div><h1>Painel administrativo</h1><span class="muted">Visão geral da operação</span></div><button class="btn" onclick="showView('clock')">Registrar ponto</button></div>
 <div class="grid">
-<section class="card">
-<h2>Teste da câmera</h2>
-<p class="muted">Use esta tela antes de testar o reconhecimento facial. A imagem fica somente no navegador e não é enviada para nenhum servidor.</p>
-
-<div id="status" class="status">Clique em “Iniciar câmera” para solicitar a permissão.</div>
-
-<div class="camera">
-<video id="video" autoplay muted playsinline></video>
-<canvas id="canvas"></canvas>
-<div id="cameraMessage" class="camera-message">A câmera ainda não foi iniciada</div>
+<div class="card stat"><div><span class="muted">Funcionários</span><strong id="stEmployees">0</strong></div><b>♙</b></div>
+<div class="card stat"><div><span class="muted">Batidas hoje</span><strong id="stPunches">0</strong></div><b>◷</b></div>
+<div class="card stat"><div><span class="muted">Presentes hoje</span><strong id="stPresent">0</strong></div><b>✓</b></div>
+<div class="card stat"><div><span class="muted">Empresas</span><strong id="stCompanies">0</strong></div><b>▤</b></div>
 </div>
-
-<div class="actions">
-<button class="primary" id="start">Iniciar câmera</button>
-<button class="secondary" id="stop" disabled>Parar câmera</button>
-<button class="success" id="face" disabled>Testar reconhecimento</button>
-</div>
-
-<p class="muted" id="faceStatus">O reconhecimento facial é opcional neste diagnóstico.</p>
+<div class="grid2"><div class="card"><h3>Últimas marcações</h3><div id="recent"></div></div><div class="card"><h3>Status da operação</h3><div id="statusBox"></div></div></div>
 </section>
 
-<section class="card">
-<h2>Como corrigir</h2>
-<div class="steps">
-<div class="step"><b class="number">1</b><div>Não abra o arquivo com duplo clique. O endereço não pode começar com <code>file://</code>.</div></div>
-<div class="step"><b class="number">2</b><div>Publique no Vercel ou abra por <code>http://localhost</code>. A câmera exige HTTPS, exceto no localhost.</div></div>
-<div class="step"><b class="number">3</b><div>Quando o navegador perguntar, selecione <b>Permitir</b> para a câmera.</div></div>
-<div class="step"><b class="number">4</b><div>Se já bloqueou, clique no cadeado ao lado do endereço, permita a câmera e recarregue a página.</div></div>
-</div>
-
-<h3 style="margin-top:22px">Dispositivos encontrados</h3>
-<div id="devices" class="muted">A lista aparece após liberar a câmera.</div>
-
-<h3 style="margin-top:22px">Diagnóstico</h3>
-<ul class="muted">
-<li>Chrome e Edge: cadeado do endereço → Câmera → Permitir.</li>
-<li>Safari no iPhone: Ajustes → Safari → Câmera → Permitir.</li>
-<li>Feche outros aplicativos que estejam usando a câmera.</li>
-<li>No Vercel, use o endereço HTTPS gerado pela publicação.</li>
-</ul>
+<section id="clock" class="view">
+<div class="title"><div><h1>Registrar ponto facial</h1><span class="muted">Identificação por reconhecimento facial</span></div></div>
+<div class="grid2"><div class="card"><div class="camera"><video id="video" autoplay muted playsinline></video><canvas id="overlay"></canvas><span class="cammsg" id="camMsg">Inicie a câmera para começar</span></div><div class="row" style="margin-top:12px"><button class="btn ok" id="startCam">Iniciar câmera</button><button class="btn secondary" id="stopCam" disabled>Parar câmera</button></div><div class="notice">O reconhecimento compara o vetor facial cadastrado, não uma foto. Use ambiente iluminado e mantenha apenas uma pessoa diante da câmera.</div></div>
+<div class="card"><h3>Resultado da identificação</h3><div id="recognition" class="empty">Aguardando câmera</div><div id="punchActions" class="hide"><div class="success notice">Funcionário identificado com sucesso.</div><button class="btn ok" id="confirmPunch" style="width:100%">Confirmar registro</button></div><p class="muted">Para usar esta tela, primeiro cadastre o rosto do funcionário em Funcionários.</p></div></div>
 </section>
-</div>
-</main>
 
-<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<section id="employees" class="view">
+<div class="title"><div><h1>Funcionários</h1><span class="muted">Cadastre pessoas e sua biometria facial</span></div><button class="btn" onclick="openEmployee()">Novo funcionário</button></div>
+<div class="card"><div class="row"><input id="empSearch" placeholder="Pesquisar funcionário..." class="field" style="margin:0"><select id="empCompany" class="field" style="margin:0"><option value="">Todas as empresas</option></select></div><div class="tablewrap" style="margin-top:15px"><table><thead><tr><th>Nome</th><th>Documento</th><th>Empresa</th><th>Biometria</th><th>Status</th><th>Ações</th></tr></thead><tbody id="empTable"></tbody></table></div></div>
+</section>
+
+<section id="companies" class="view">
+<div class="title"><div><h1>Empresas clientes</h1><span class="muted">Gestão multiempresa para comercialização</span></div><button class="btn" onclick="openCompany()">Nova empresa</button></div>
+<div class="grid3" id="companyCards"></div>
+</section>
+
+<section id="reports" class="view">
+<div class="title"><div><h1>Relatórios</h1><span class="muted">Acompanhe jornadas e exporte os dados</span></div><button class="btn" id="exportCsv">Exportar CSV</button></div>
+<div class="card"><div class="row"><input type="month" id="reportMonth"><select id="reportCompany"><option value="">Todas as empresas</option></select><select id="reportEmployee"><option value="">Todos os funcionários</option></select></div><div class="tablewrap" style="margin-top:16px"><table><thead><tr><th>Data</th><th>Funcionário</th><th>Empresa</th><th>Marcações</th><th>Horas trabalhadas</th></tr></thead><tbody id="reportTable"></tbody></table></div></div>
+</section>
+
+<section id="settings" class="view">
+<div class="title"><div><h1>Configurações</h1><span class="muted">Conexão, privacidade e operação</span></div></div>
+<div class="card"><h3>Conectar ao Supabase</h3><p class="muted">Use a URL e a chave pública anon do projeto. Nunca coloque a service_role no navegador.</p><div class="grid3"><div class="field"><label>URL do projeto</label><input id="sbUrl" placeholder="https://projeto.supabase.co"></div><div class="field"><label>Chave anon pública</label><input id="sbKey" placeholder="eyJ..."></div><div class="field" style="align-self:end"><button class="btn" onclick="connectSupabase()">Salvar conexão</button></div></div><button class="btn secondary" onclick="useLocal()">Usar somente este navegador</button></div>
+<div class="card" style="margin-top:16px"><h3>Banco de dados</h3><p class="muted">Execute este SQL no SQL Editor do Supabase antes de conectar.</p><pre id="sql"></pre><button class="btn secondary" onclick="copySql()">Copiar SQL</button></div>
+<div class="card" style="margin-top:16px"><h3>Privacidade e LGPD</h3><div class="notice dangerbox">Biometria facial é dado pessoal sensível. Antes de comercializar, implemente controle de acesso por empresa, política de retenção, consentimento ou outra base legal adequada, canal de atendimento ao titular, auditoria e criptografia. Este arquivo é uma base funcional de demonstração e não substitui validação jurídica ou de segurança.</div></div>
+</section>
+</main></div>
+
+<div class="modal" id="employeeModal"><div class="modalbox"><div class="modalhead"><h2 id="empModalTitle">Novo funcionário</h2><button class="close" onclick="closeModal('employeeModal')">×</button></div><input type="hidden" id="editEmpId"><div class="grid3"><div class="field"><label>Nome completo</label><input id="empName"></div><div class="field"><label>Documento interno</label><input id="empDoc"></div><div class="field"><label>Empresa</label><select id="empCompanyForm"></select></div></div><div class="field"><label><input type="checkbox" id="empActive" checked> Funcionário ativo</label></div><div class="notice">O consentimento deve ser obtido conforme a política da empresa e a base legal aplicável.</div><label class="field"><span><input type="checkbox" id="empConsent"> Confirmo que o consentimento/autorização foi registrado</span></label><div class="row"><button class="btn secondary auto" onclick="closeModal('employeeModal')">Cancelar</button><button class="btn auto" onclick="saveEmployee()">Salvar funcionário</button></div></div></div>
+
+<div class="modal" id="faceModal"><div class="modalbox"><div class="modalhead"><h2>Cadastro facial</h2><button class="close" onclick="closeModal('faceModal')">×</button></div><p id="facePerson" class="muted"></p><div class="camera"><video id="enrollVideo" autoplay muted playsinline></video><canvas id="enrollOverlay"></canvas><span class="cammsg" id="enrollMsg">Inicie a câmera</span></div><div class="row" style="margin-top:12px"><button class="btn ok auto" id="startEnroll">Iniciar câmera</button><button class="btn auto" id="captureFace" disabled>Capturar rosto</button><button class="btn secondary auto" onclick="closeModal('faceModal')">Fechar</button></div><div class="notice">Será armazenado somente o descritor numérico facial. A imagem da câmera não é salva.</div></div></div>
+
+<div class="modal" id="companyModal"><div class="modalbox"><div class="modalhead"><h2>Empresa cliente</h2><button class="close" onclick="closeModal('companyModal')">×</button></div><input type="hidden" id="editCompanyId"><div class="grid3"><div class="field"><label>Razão social</label><input id="companyName"></div><div class="field"><label>CNPJ</label><input id="companyCnpj"></div><div class="field"><label>Plano</label><select id="companyPlan"><option>Essencial</option><option>Profissional</option><option>Enterprise</option></select></div></div><div class="row"><button class="btn secondary auto" onclick="closeModal('companyModal')">Cancelar</button><button class="btn auto" onclick="saveCompany()">Salvar empresa</button></div></div></div>
+<div id="toast"></div>
+
 <script>
-const $=s=>document.querySelector(s);
-const video=$("#video"),canvas=$("#canvas"),statusBox=$("#status"),message=$("#cameraMessage");
-let stream=null,detectTimer=null,modelsLoaded=false;
-
-function status(text,type=""){
-  statusBox.textContent=text;
-  statusBox.className="status "+type;
-}
-function secureCheck(){
-  const ok=window.isSecureContext||location.hostname==="localhost"||location.hostname==="127.0.0.1";
-  $("#secure").textContent=ok?"Ambiente seguro":"Ambiente bloqueado";
-  $("#secure").style.color=ok?"#86efac":"#fca5a5";
-  if(!ok){
-    status("Abra este sistema por HTTPS ou localhost. Arquivos file:// normalmente bloqueiam a câmera.","warn");
-    message.textContent="Ambiente inseguro para câmera";
-    $("#start").disabled=true;
-  }
-}
-function cameraError(e){
-  const names={
-    NotAllowedError:"Permissão negada. Libere a câmera no cadeado do endereço e recarregue a página.",
-    PermissionDeniedError:"Permissão negada. Libere a câmera no cadeado do endereço e recarregue a página.",
-    NotFoundError:"Nenhuma câmera foi encontrada neste dispositivo.",
-    DevicesNotFoundError:"Nenhuma câmera foi encontrada neste dispositivo.",
-    NotReadableError:"A câmera está sendo usada por outro aplicativo.",
-    TrackStartError:"A câmera está sendo usada por outro aplicativo.",
-    OverconstrainedError:"A câmera não suporta a configuração solicitada.",
-    SecurityError:"O navegador bloqueou a câmera por segurança.",
-    AbortError:"A inicialização da câmera foi interrompida."
-  };
-  status(names[e.name]||("Erro da câmera: "+(e.message||e.name)),"error");
-  message.textContent="Não foi possível iniciar";
-}
-async function listDevices(){
-  try{
-    const all=await navigator.mediaDevices.enumerateDevices();
-    const cams=all.filter(x=>x.kind==="videoinput");
-    $("#devices").innerHTML=cams.length
-      ? cams.map((x,i)=>`<div class="device">${i+1}. ${x.label||"Câmera disponível"}</div>`).join("")
-      :"Nenhuma câmera encontrada";
-  }catch(e){$("#devices").textContent="Não foi possível listar os dispositivos."}
-}
-async function startCamera(){
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    status("Este navegador não oferece acesso à câmera. Use Chrome, Edge ou Safari atualizado.","error");
-    return;
-  }
-  try{
-    status("Solicitando permissão para usar a câmera...");
-    stream=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:"user",width:{ideal:1280},height:{ideal:720}},
-      audio:false
-    });
-    video.srcObject=stream;
-    await video.play();
-    $("#start").disabled=true;
-    $("#stop").disabled=false;
-    $("#face").disabled=false;
-    message.classList.add("hidden");
-    status("Câmera funcionando. Posicione o rosto no centro da imagem.","ok");
-    await listDevices();
-  }catch(e){cameraError(e)}
-}
-function stopCamera(){
-  if(stream)stream.getTracks().forEach(t=>t.stop());
-  stream=null;
-  clearInterval(detectTimer);
-  $("#start").disabled=false;
-  $("#stop").disabled=true;
-  $("#face").disabled=true;
-  message.classList.remove("hidden");
-  message.textContent="A câmera está parada";
-  status("Câmera parada.");
-  const ctx=canvas.getContext("2d");
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-}
-async function loadModels(){
-  if(modelsLoaded)return;
-  $("#face").textContent="Carregando modelos...";
-  status("Carregando modelos de reconhecimento facial...");
-  const base="https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
-  await faceapi.nets.tinyFaceDetector.loadFromUri(base);
-  await faceapi.nets.faceLandmark68Net.loadFromUri(base);
-  await faceapi.nets.faceRecognitionNet.loadFromUri(base);
-  modelsLoaded=true;
-}
-async function detectFace(){
-  if(!stream||!modelsLoaded)return;
-  const result=await faceapi.detectAllFaces(video,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-  const size={width:video.videoWidth,height:video.videoHeight};
-  if(!size.width)return;
-  const resized=faceapi.resizeResults(result,size);
-  canvas.width=size.width;
-  canvas.height=size.height;
-  const ctx=canvas.getContext("2d");
-  ctx.clearRect(0,0,size.width,size.height);
-  resized.forEach(x=>{
-    const b=x.detection.box;
-    ctx.strokeStyle="#42dc8a";
-    ctx.lineWidth=4;
-    ctx.strokeRect(b.x,b.y,b.width,b.height);
-  });
-  if(result.length===1){
-    $("#faceStatus").textContent="Um rosto detectado. A câmera e o reconhecimento estão funcionando.";
-    status("Rosto detectado com sucesso.","ok");
-  }else if(result.length>1){
-    $("#faceStatus").textContent="Mais de um rosto detectado. Deixe apenas uma pessoa diante da câmera.";
-    status("Foram detectados vários rostos.","warn");
-  }else{
-    $("#faceStatus").textContent="Nenhum rosto detectado. Melhore a iluminação e olhe para a câmera.";
-  }
-}
-$("#start").onclick=startCamera;
-$("#stop").onclick=stopCamera;
-$("#face").onclick=async()=>{
-  try{
-    await loadModels();
-    $("#face").textContent="Reconhecimento ativo";
-    $("#face").disabled=true;
-    detectTimer=setInterval(detectFace,800);
-    await detectFace();
-  }catch(e){
-    $("#face").disabled=false;
-    $("#face").textContent="Testar reconhecimento";
-    status("A câmera abriu, mas os modelos faciais não carregaram. Verifique a internet ou o bloqueador de conteúdo.","error");
-    $("#faceStatus").textContent=e.message||"Falha ao carregar modelos faciais.";
-  }
-};
-window.addEventListener("beforeunload",stopCamera);
-secureCheck();
+const MODEL_URL="https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
+const SQL=`create extension if not exists pgcrypto;
+create table if not exists empresas(id uuid primary key default gen_random_uuid(),nome text not null,cnpj text,plano text default 'Essencial',ativo boolean default true,criado_em timestamptz default now());
+create table if not exists funcionarios(id uuid primary key default gen_random_uuid(),empresa_id uuid references empresas(id) on delete cascade,nome text not null,documento text,ativo boolean default true,consentimento boolean default false,descritor_facial jsonb,criado_em timestamptz default now());
+create table if not exists marcacoes(id uuid primary key default gen_random_uuid(),empresa_id uuid references empresas(id) on delete cascade,funcionario_id uuid references funcionarios(id) on delete cascade,tipo text check(tipo in('entrada','saida')),momento timestamptz default now(),metodo text default 'facial',confianca numeric);
+alter table empresas enable row level security; alter table funcionarios enable row level security; alter table marcacoes enable row level security;
+create policy "demo empresas" on empresas for all using(true) with check(true);
+create policy "demo funcionarios" on funcionarios for all using(true) with check(true);
+create policy "demo marcacoes" on marcacoes for all using(true) with check(true);`;
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let db=null,cam=null,enrollCam=null,modelsReady=false,selectedFace=null,faceTimer=null;
+const state={companies:[],employees:[],punches:[]};
+function storageGet(k,d=[]){try{let x=JSON.parse(localStorage.getItem(k));return x??d}catch(e){return d}}
+function storageSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){toast("Não foi possível salvar localmente")}}
+function toast(x){let t=$("#toast");t.textContent=x;t.classList.add("on");clearTimeout(t.x);t.x=setTimeout(()=>t.classList.remove("on"),2700)}
+function id(){return crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random()}
+function nowMonth(){let d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
+function isoDay(x){let d=new Date(x);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function time(x){return new Date(x).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}
+function dateBR(x){return new Date(x+"T12:00:00").toLocaleDateString("pt-BR")}
+function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function seed(){if(storageGet("fp_seed",null))return;let d=new Date(),base=isoDay(d),c1={id:id(),nome:"Metalúrgica Horizonte Ltda.",cnpj:"12.345.678/0001-90",plano:"Profissional",ativo:true},c2={id:id(),nome:"Clínica Bem-Estar",cnpj:"45.678.901/0001-22",plano:"Essencial",ativo:true};let e1={id:id(),empresa_id:c1.id,nome:"Mariana Costa",documento:"FUNC-001",ativo:true,consentimento:true,descritor_facial:null},e2={id:id(),empresa_id:c1.id,nome:"Rafael Mendes",documento:"FUNC-002",ativo:true,consentimento:true,descritor_facial:null},e3={id:id(),empresa_id:c2.id,nome:"Juliana Alves",documento:"FUNC-003",ativo:true,consentimento:true,descritor_facial:null};let p=[];[[e1,"08:02","12:01","13:03","17:11"],[e2,"07:56","12:00","13:00","16:58"],[e3,"08:18","12:05","13:07","17:22"]].forEach(a=>a.slice(1).forEach((t,i)=>p.push({id:id(),empresa_id:a[0].empresa_id,funcionario_id:a[0].id,tipo:i%2?"saida":"entrada",momento:base+"T"+t+":00",metodo:"facial",confianca:null})));state.companies=[c1,c2];state.employees=[e1,e2,e3];state.punches=p;saveLocal();storageSet("fp_seed",1)}
+function saveLocal(){storageSet("fp_c",state.companies);storageSet("fp_e",state.employees);storageSet("fp_p",state.punches)}
+function loadLocal(){state.companies=storageGet("fp_c",[]);state.employees=storageGet("fp_e",[]);state.punches=storageGet("fp_p",[])}
+async function api(table,method,payload,filter){if(!db){let a=table==="empresas"?state.companies:table==="funcionarios"?state.employees:state.punches;if(method==="select")return a;if(method==="insert"){a.push(payload);saveLocal();return payload}if(method==="update"){Object.assign(a.find(x=>x.id===filter),payload);saveLocal();return}if(method==="delete"){let i=a.findIndex(x=>x.id===filter);if(i>=0)a.splice(i,1);saveLocal();return}}let q=db.from(table);if(method==="select"){let r=await q.select("*");if(r.error)throw r.error;return r.data}if(method==="insert"){let r=await q.insert(payload);if(r.error)throw r.error;return r.data?.[0]}if(method==="update"){let r=await q.update(payload).eq("id",filter);if(r.error)throw r.error}if(method==="delete"){let r=await q.delete().eq("id",filter);if(r.error)throw r.error}}
+async function refresh(){if(db){try{state.companies=await api("empresas","select");state.employees=await api("funcionarios","select");state.punches=await api("marcacoes","select")}catch(e){toast("Falha ao carregar Supabase: "+e.message)}}renderAll()}
+function companyName(id){return state.companies.find(x=>x.id===id)?.nome||"Sem empresa"}
+function employeeName(id){return state.employees.find(x=>x.id===id)?.nome||"Removido"}
+function showView(v){$$(".view").forEach(x=>x.classList.toggle("active",x.id===v));$$(".nav button").forEach(x=>x.classList.toggle("active",x.dataset.view===v));renderAll()}
+$$(".nav button").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+function renderAll(){renderStats();renderRecent();renderCompanies();fillSelects();renderEmployees();renderReports();$("#sql").textContent=SQL;$("#connection").textContent=db?"Supabase conectado":"Modo local"}
+function renderStats(){let today=isoDay(new Date()),p=state.punches.filter(x=>isoDay(x.momento)===today);$("#stEmployees").textContent=state.employees.filter(x=>x.ativo).length;$("#stPunches").textContent=p.length;$("#stPresent").textContent=new Set(p.map(x=>x.funcionario_id)).size;$("#stCompanies").textContent=state.companies.filter(x=>x.ativo).length;$("#statusBox").innerHTML=`<div class="notice success">Sistema operacional</div><p class="muted">${modelsReady?"Modelos faciais carregados.":"Modelos faciais serão carregados ao iniciar a câmera."}</p><p class="muted">${db?"Dados sincronizados com Supabase.":"Dados salvos neste navegador."}</p>`}
+function renderRecent(){let p=[...state.punches].sort((a,b)=>new Date(b.momento)-new Date(a.momento)).slice(0,7);$("#recent").innerHTML=p.length?`<div class="tablewrap"><table><thead><tr><th>Funcionário</th><th>Tipo</th><th>Horário</th></tr></thead><tbody>${p.map(x=>`<tr><td>${esc(employeeName(x.funcionario_id))}</td><td><span class="tag ${x.tipo==="entrada"?"ok":"warn"}">${x.tipo}</span></td><td>${time(x.momento)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">Nenhuma marcação.</div>`}
+function fillSelects(){let c=`<option value="">Todas as empresas</option>`+state.companies.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join("");$("#empCompany").innerHTML=c;$("#reportCompany").innerHTML=c;$("#empCompanyForm").innerHTML=state.companies.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join("");let ef=$("#reportEmployee").value;$("#reportEmployee").innerHTML=`<option value="">Todos os funcionários</option>`+state.employees.map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join("");$("#reportEmployee").value=ef}
+function renderEmployees(){let q=($("#empSearch").value||"").toLowerCase(),c=$("#empCompany").value;let a=state.employees.filter(x=>(!q||x.nome.toLowerCase().includes(q)||x.documento.toLowerCase().includes(q))&&(!c||x.empresa_id===c));$("#empTable").innerHTML=a.length?a.map(x=>`<tr><td><b>${esc(x.nome)}</b></td><td>${esc(x.documento)}</td><td>${esc(companyName(x.empresa_id))}</td><td>${x.descritor_facial?'<span class="tag ok">Cadastrada</span>':'<span class="tag warn">Pendente</span>'}</td><td>${x.ativo?'<span class="tag ok">Ativo</span>':'<span class="tag">Inativo</span>'}</td><td><button class="btn secondary" onclick="editEmployee('${x.id}')">Editar</button> <button class="btn" onclick="openFace('${x.id}')">Biometria</button> <button class="btn danger" onclick="removeEmployee('${x.id}')">Excluir</button></td></tr>`).join(""):`<tr><td colspan="6" class="empty">Nenhum funcionário encontrado.</td></tr>`}
+function renderCompanies(){$("#companyCards").innerHTML=state.companies.map(c=>{let n=state.employees.filter(e=>e.empresa_id===c.id).length;return `<div class="card"><div class="stat"><h3>${esc(c.nome)}</h3><span class="tag">${esc(c.plano)}</span></div><p class="muted">CNPJ: ${esc(c.cnpj||"Não informado")}</p><p><b>${n}</b> funcionário(s)</p><button class="btn secondary" onclick="editCompany('${c.id}')">Editar</button> <button class="btn danger" onclick="removeCompany('${c.id}')">Excluir</button></div>`}).join("")||`<div class="card empty">Cadastre a primeira empresa cliente.</div>`}
+function renderReports(){let m=$("#reportMonth").value||nowMonth(),c=$("#reportCompany").value,e=$("#reportEmployee").value,a=state.punches.filter(x=>x.momento.slice(0,7)===m&&(!c||x.empresa_id===c)&&(!e||x.funcionario_id===e)),g={};a.forEach(x=>(g[isoDay(x.momento)+"|"+x.funcionario_id]??=[]).push(x));let rows=Object.entries(g).sort((a,b)=>b[0].localeCompare(a[0]));$("#reportTable").innerHTML=rows.length?rows.map(([k,p])=>{p.sort((a,b)=>new Date(a.momento)-new Date(b.momento));let mins=0;for(let i=0;i<p.length-1;i+=2)mins+=(new Date(p[i+1].momento)-new Date(p[i].momento))/60000;return `<tr><td>${dateBR(k.split("|")[0])}</td><td>${esc(employeeName(p[0].funcionario_id))}</td><td>${esc(companyName(p[0].empresa_id))}</td><td>${p.map(x=>x.tipo+" "+time(x.momento)).join(" · ")}</td><td><b>${Math.floor(mins/60)}h ${String(Math.round(mins%60)).padStart(2,"0")}min</b></td></tr>`}).join(""):`<tr><td colspan="5" class="empty">Nenhum registro no período.</td></tr>`}
+function openModal(id){$("#"+id).classList.add("open")}function closeModal(id){$("#"+id).classList.remove("open")}
+function openCompany(id){$("#editCompanyId").value=id||"";let c=state.companies.find(x=>x.id===id);$("#companyName").value=c?.nome||"";$("#companyCnpj").value=c?.cnpj||"";$("#companyPlan").value=c?.plano||"Essencial";openModal("companyModal")}
+async function saveCompany(){let n=$("#companyName").value.trim();if(!n)return toast("Informe a razão social");let obj={nome:n,cnpj:$("#companyCnpj").value.trim(),plano:$("#companyPlan").value,ativo:true},eid=$("#editCompanyId").value;if(eid){await api("empresas","update",obj,eid)}else{obj.id=id();await api("empresas","insert",obj)}closeModal("companyModal");await refresh()}
+function editCompany(id){openCompany(id)}
+async function removeCompany(id){if(!confirm("Excluir empresa e os funcionários vinculados?"))return;let em=state.employees.filter(x=>x.empresa_id===id);for(let x of em)await api("funcionarios","delete",null,x.id);await api("empresas","delete",null,id);await refresh()}
+function openEmployee(id){$("#editEmpId").value=id||"";let e=state.employees.find(x=>x.id===id);$("#empName").value=e?.nome||"";$("#empDoc").value=e?.documento||"";$("#empCompanyForm").value=e?.empresa_id||state.companies[0]?.id||"";$("#empActive").checked=e?e.ativo:true;$("#empConsent").checked=e?e.consentimento:false;$("#empModalTitle").textContent=id?"Editar funcionário":"Novo funcionário";openModal("employeeModal")}
+function editEmployee(id){openEmployee(id)}
+async function saveEmployee(){let n=$("#empName").value.trim(),co=$("#empCompanyForm").value;if(!n||!co)return toast("Informe nome e empresa");let eid=$("#editEmpId").value,obj={nome:n,documento:$("#empDoc").value.trim(),empresa_id:co,ativo:$("#empActive").checked,consentimento:$("#empConsent").checked};if(eid){await api("funcionarios","update",obj,eid)}else{obj.id=id();obj.descritor_facial=null;await api("funcionarios","insert",obj)}closeModal("employeeModal");await refresh()}
+async function removeEmployee(id){if(!confirm("Excluir funcionário e seus registros?"))return;await api("funcionarios","delete",null,id);state.punches=state.punches.filter(x=>x.funcionario_id!==id);saveLocal();await refresh()}
+async function loadModels(){if(modelsReady)return;$("#camMsg").textContent="Carregando modelos faciais...";try{await Promise.all(["tiny_face_detector_model-weights_manifest.json","face_landmark_68_model-weights_manifest.json","face_recognition_model-weights_manifest.json"].map(x=>faceapi.nets[x.replace("-weights_manifest.json","")].loadFromUri(MODEL_URL)));modelsReady=true;renderStats()}catch(e){throw new Error("Não foi possível carregar os modelos faciais")}}
+async function startVideo(video,msg,button){try{await loadModels();let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false});video.srcObject=s;button.disabled=true;msg.textContent="Posicione o rosto no centro";return s}catch(e){toast("Câmera indisponível: "+e.message);throw e}}
+function stopStream(s){if(s){s.getTracks().forEach(t=>t.stop())}}
+$("#startCam").onclick=async()=>{cam=await startVideo($("#video"),$("#camMsg"),$("#startCam"));$("#stopCam").disabled=false;$("#camMsg").classList.add("hide");faceTimer=setInterval(recognize,900)}
+$("#stopCam").onclick=()=>{stopStream(cam);cam=null;clearInterval(faceTimer);$("#startCam").disabled=false;$("#stopCam").disabled=true;$("#camMsg").classList.remove("hide");$("#camMsg").textContent="Câmera parada"}
+async function recognize(){if(!cam||!modelsReady)return;let v=$("#video"),d=await faceapi.detectSingleFace(v,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();if(!d){$("#recognition").innerHTML='<div class="empty">Nenhum rosto detectado</div>';$("#punchActions").classList.add("hide");selectedFace=null;return}let best=null,dist=1;state.employees.filter(x=>x.ativo&&x.descritor_facial).forEach(e=>{let z=faceapi.euclideanDistance(d.descriptor,new Float32Array(e.descritor_facial));if(z<dist){dist=z;best=e}});if(best&&dist<.52){selectedFace={e:best,confidence:Math.max(0,1-dist)};$("#recognition").innerHTML=`<div class="success notice"><b>${esc(best.nome)}</b><br><span class="muted">${esc(companyName(best.empresa_id))} · confiança ${(selectedFace.confidence*100).toFixed(1)}%</span></div>`;$("#punchActions").classList.remove("hide")}else{$("#recognition").innerHTML='<div class="notice">Rosto não reconhecido. Cadastre a biometria ou tente novamente.</div>';$("#punchActions").classList.add("hide");selectedFace=null}}
+$("#confirmPunch").onclick=async()=>{if(!selectedFace)return;let e=selectedFace.e,pp=state.punches.filter(x=>x.funcionario_id===e.id&&isoDay(x.momento)===isoDay(new Date())).sort((a,b)=>new Date(b.momento)-new Date(a.momento)),tipo=pp[0]?.tipo==="entrada"?"saida":"entrada",o={id:id(),empresa_id:e.empresa_id,funcionario_id:e.id,tipo,momento:new Date().toISOString(),metodo:"facial",confianca:selectedFace.confidence};await api("marcacoes","insert",o);toast(tipo==="entrada"?"Entrada registrada":"Saída registrada");selectedFace=null;$("#punchActions").classList.add("hide");$("#recognition").innerHTML='<div class="empty">Registro concluído</div>';await refresh()}
+async function openFace(id){let e=state.employees.find(x=>x.id===id);if(!e.consentimento)return toast("Registre o consentimento antes da biometria");$("#facePerson").textContent="Funcionário: "+e.nome;$("#faceModal").dataset.id=id;openModal("faceModal")}
+$("#startEnroll").onclick=async()=>{enrollCam=await startVideo($("#enrollVideo"),$("#enrollMsg"),$("#startEnroll"));$("#captureFace").disabled=false;$("#enrollMsg").classList.add("hide")}
+$("#captureFace").onclick=async()=>{let v=$("#enrollVideo"),e=state.employees.find(x=>x.id===$("#faceModal").dataset.id);let d=await faceapi.detectSingleFace(v,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();if(!d)return toast("Nenhum rosto detectado");e.descritor_facial=Array.from(d.descriptor);await api("funcionarios","update",{descritor_facial:e.descritor_facial},e.id);stopStream(enrollCam);closeModal("faceModal");toast("Biometria cadastrada com sucesso");await refresh()}
+$("#empSearch").oninput=renderEmployees;$("#empCompany").onchange=renderEmployees;$("#reportMonth").onchange=renderReports;$("#reportCompany").onchange=renderReports;$("#reportEmployee").onchange=renderReports;
+$("#exportCsv").onclick=()=>{let rows=[["Data","Funcionário","Empresa","Marcações","Horas"]];$$(`#reportTable tr`).forEach(tr=>rows.push([...tr.children].map(x=>x.textContent.trim())));let a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+rows.map(r=>r.map(x=>`"${x.replaceAll('"','""')}"`).join(";")).join("\n")],{type:"text/csv"}));a.download="relatorio-faceponto.csv";a.click()}
+function copySql(){navigator.clipboard.writeText(SQL).then(()=>toast("SQL copiado"))}
+async function connectSupabase(){let url=$("#sbUrl").value.trim(),key=$("#sbKey").value.trim();if(!url||!key)return toast("Preencha URL e chave anon");try{let x=window.supabase.createClient(url,key),r=await x.from("empresas").select("id").limit(1);if(r.error)throw r.error;db=x;try{localStorage.setItem("fp_sb",JSON.stringify({url,key}))}catch(e){}toast("Supabase conectado");await refresh()}catch(e){toast("Falha na conexão: "+e.message)}}
+function useLocal(){db=null;try{localStorage.removeItem("fp_sb")}catch(e){}loadLocal();renderAll();toast("Modo local ativado")}
+(async()=>{let c=storageGet("fp_sb",null);seed();loadLocal();if(c?.url&&c?.key){try{db=window.supabase.createClient(c.url,c.key)}catch(e){db=null}}$("#reportMonth").value=nowMonth();renderAll();if(db)await refresh()})();
 </script>
 </body>
 </html>
