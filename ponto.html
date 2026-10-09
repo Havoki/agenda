@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FacePonto | Teste de câmera</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--text:#182235;--muted:#6b7280;--primary:#4f46e5;--ok:#087f40;--danger:#b42318;--line:#e2e8f0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,Arial}
+header{background:#151b2c;color:#fff;padding:20px;display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;margin:0}
+header span{font-size:13px;color:#cbd5e1}
+main{max-width:920px;margin:28px auto;padding:0 16px}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 5px 18px #1720330b}
+h2{font-size:19px;margin:0 0 8px}
+h3{font-size:16px;margin:0 0 10px}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.camera{background:#0b1220;border-radius:13px;overflow:hidden;position:relative;min-height:320px;display:flex;align-items:center;justify-content:center;margin-top:16px}
+video{display:block;width:100%;max-height:500px;object-fit:cover;transform:scaleX(-1)}
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.camera-message{position:absolute;background:#0b1220dd;color:#fff;padding:10px 14px;border-radius:9px;text-align:center;max-width:85%}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button{border:0;border-radius:9px;padding:11px 15px;font:inherit;font-weight:700;cursor:pointer}
+.primary{background:var(--primary);color:#fff}
+.secondary{background:#e9eef6;color:var(--text)}
+.success{background:var(--ok);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.status{padding:12px;border-radius:10px;background:#eef2ff;color:#3730a3;margin:14px 0;line-height:1.45}
+.status.ok{background:#e8f7ee;color:#166534}
+.status.error{background:#ffeded;color:var(--danger)}
+.status.warn{background:#fff6d8;color:#775500}
+.steps{display:grid;gap:12px;margin-top:18px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.number{background:#e0e7ff;color:#3730a3;border-radius:50%;width:27px;height:27px;display:grid;place-items:center;font-weight:800;flex:none}
+code{background:#eef2f7;border-radius:5px;padding:2px 5px}
+ul{padding-left:20px;line-height:1.7}
+.device{font-size:13px;border-bottom:1px solid var(--line);padding:9px 0}
+.hidden{display:none!important}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.camera{min-height:240px}header{gap:10px;align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header>
+<h1>FacePonto | Diagnóstico da câmera</h1>
+<span id="secure">Verificando ambiente...</span>
+</header>
+
+<main>
+<div class="grid">
+<section class="card">
+<h2>Teste da câmera</h2>
+<p class="muted">Use esta tela antes de testar o reconhecimento facial. A imagem fica somente no navegador e não é enviada para nenhum servidor.</p>
+
+<div id="status" class="status">Clique em “Iniciar câmera” para solicitar a permissão.</div>
+
+<div class="camera">
+<video id="video" autoplay muted playsinline></video>
+<canvas id="canvas"></canvas>
+<div id="cameraMessage" class="camera-message">A câmera ainda não foi iniciada</div>
+</div>
+
+<div class="actions">
+<button class="primary" id="start">Iniciar câmera</button>
+<button class="secondary" id="stop" disabled>Parar câmera</button>
+<button class="success" id="face" disabled>Testar reconhecimento</button>
+</div>
+
+<p class="muted" id="faceStatus">O reconhecimento facial é opcional neste diagnóstico.</p>
+</section>
+
+<section class="card">
+<h2>Como corrigir</h2>
+<div class="steps">
+<div class="step"><b class="number">1</b><div>Não abra o arquivo com duplo clique. O endereço não pode começar com <code>file://</code>.</div></div>
+<div class="step"><b class="number">2</b><div>Publique no Vercel ou abra por <code>http://localhost</code>. A câmera exige HTTPS, exceto no localhost.</div></div>
+<div class="step"><b class="number">3</b><div>Quando o navegador perguntar, selecione <b>Permitir</b> para a câmera.</div></div>
+<div class="step"><b class="number">4</b><div>Se já bloqueou, clique no cadeado ao lado do endereço, permita a câmera e recarregue a página.</div></div>
+</div>
+
+<h3 style="margin-top:22px">Dispositivos encontrados</h3>
+<div id="devices" class="muted">A lista aparece após liberar a câmera.</div>
+
+<h3 style="margin-top:22px">Diagnóstico</h3>
+<ul class="muted">
+<li>Chrome e Edge: cadeado do endereço → Câmera → Permitir.</li>
+<li>Safari no iPhone: Ajustes → Safari → Câmera → Permitir.</li>
+<li>Feche outros aplicativos que estejam usando a câmera.</li>
+<li>No Vercel, use o endereço HTTPS gerado pela publicação.</li>
+</ul>
+</section>
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const video=$("#video"),canvas=$("#canvas"),statusBox=$("#status"),message=$("#cameraMessage");
+let stream=null,detectTimer=null,modelsLoaded=false;
+
+function status(text,type=""){
+  statusBox.textContent=text;
+  statusBox.className="status "+type;
+}
+function secureCheck(){
+  const ok=window.isSecureContext||location.hostname==="localhost"||location.hostname==="127.0.0.1";
+  $("#secure").textContent=ok?"Ambiente seguro":"Ambiente bloqueado";
+  $("#secure").style.color=ok?"#86efac":"#fca5a5";
+  if(!ok){
+    status("Abra este sistema por HTTPS ou localhost. Arquivos file:// normalmente bloqueiam a câmera.","warn");
+    message.textContent="Ambiente inseguro para câmera";
+    $("#start").disabled=true;
+  }
+}
+function cameraError(e){
+  const names={
+    NotAllowedError:"Permissão negada. Libere a câmera no cadeado do endereço e recarregue a página.",
+    PermissionDeniedError:"Permissão negada. Libere a câmera no cadeado do endereço e recarregue a página.",
+    NotFoundError:"Nenhuma câmera foi encontrada neste dispositivo.",
+    DevicesNotFoundError:"Nenhuma câmera foi encontrada neste dispositivo.",
+    NotReadableError:"A câmera está sendo usada por outro aplicativo.",
+    TrackStartError:"A câmera está sendo usada por outro aplicativo.",
+    OverconstrainedError:"A câmera não suporta a configuração solicitada.",
+    SecurityError:"O navegador bloqueou a câmera por segurança.",
+    AbortError:"A inicialização da câmera foi interrompida."
+  };
+  status(names[e.name]||("Erro da câmera: "+(e.message||e.name)),"error");
+  message.textContent="Não foi possível iniciar";
+}
+async function listDevices(){
+  try{
+    const all=await navigator.mediaDevices.enumerateDevices();
+    const cams=all.filter(x=>x.kind==="videoinput");
+    $("#devices").innerHTML=cams.length
+      ? cams.map((x,i)=>`<div class="device">${i+1}. ${x.label||"Câmera disponível"}</div>`).join("")
+      :"Nenhuma câmera encontrada";
+  }catch(e){$("#devices").textContent="Não foi possível listar os dispositivos."}
+}
+async function startCamera(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    status("Este navegador não oferece acesso à câmera. Use Chrome, Edge ou Safari atualizado.","error");
+    return;
+  }
+  try{
+    status("Solicitando permissão para usar a câmera...");
+    stream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:"user",width:{ideal:1280},height:{ideal:720}},
+      audio:false
+    });
+    video.srcObject=stream;
+    await video.play();
+    $("#start").disabled=true;
+    $("#stop").disabled=false;
+    $("#face").disabled=false;
+    message.classList.add("hidden");
+    status("Câmera funcionando. Posicione o rosto no centro da imagem.","ok");
+    await listDevices();
+  }catch(e){cameraError(e)}
+}
+function stopCamera(){
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  stream=null;
+  clearInterval(detectTimer);
+  $("#start").disabled=false;
+  $("#stop").disabled=true;
+  $("#face").disabled=true;
+  message.classList.remove("hidden");
+  message.textContent="A câmera está parada";
+  status("Câmera parada.");
+  const ctx=canvas.getContext("2d");
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+async function loadModels(){
+  if(modelsLoaded)return;
+  $("#face").textContent="Carregando modelos...";
+  status("Carregando modelos de reconhecimento facial...");
+  const base="https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
+  await faceapi.nets.tinyFaceDetector.loadFromUri(base);
+  await faceapi.nets.faceLandmark68Net.loadFromUri(base);
+  await faceapi.nets.faceRecognitionNet.loadFromUri(base);
+  modelsLoaded=true;
+}
+async function detectFace(){
+  if(!stream||!modelsLoaded)return;
+  const result=await faceapi.detectAllFaces(video,new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+  const size={width:video.videoWidth,height:video.videoHeight};
+  if(!size.width)return;
+  const resized=faceapi.resizeResults(result,size);
+  canvas.width=size.width;
+  canvas.height=size.height;
+  const ctx=canvas.getContext("2d");
+  ctx.clearRect(0,0,size.width,size.height);
+  resized.forEach(x=>{
+    const b=x.detection.box;
+    ctx.strokeStyle="#42dc8a";
+    ctx.lineWidth=4;
+    ctx.strokeRect(b.x,b.y,b.width,b.height);
+  });
+  if(result.length===1){
+    $("#faceStatus").textContent="Um rosto detectado. A câmera e o reconhecimento estão funcionando.";
+    status("Rosto detectado com sucesso.","ok");
+  }else if(result.length>1){
+    $("#faceStatus").textContent="Mais de um rosto detectado. Deixe apenas uma pessoa diante da câmera.";
+    status("Foram detectados vários rostos.","warn");
+  }else{
+    $("#faceStatus").textContent="Nenhum rosto detectado. Melhore a iluminação e olhe para a câmera.";
+  }
+}
+$("#start").onclick=startCamera;
+$("#stop").onclick=stopCamera;
+$("#face").onclick=async()=>{
+  try{
+    await loadModels();
+    $("#face").textContent="Reconhecimento ativo";
+    $("#face").disabled=true;
+    detectTimer=setInterval(detectFace,800);
+    await detectFace();
+  }catch(e){
+    $("#face").disabled=false;
+    $("#face").textContent="Testar reconhecimento";
+    status("A câmera abriu, mas os modelos faciais não carregaram. Verifique a internet ou o bloqueador de conteúdo.","error");
+    $("#faceStatus").textContent=e.message||"Falha ao carregar modelos faciais.";
+  }
+};
+window.addEventListener("beforeunload",stopCamera);
+secureCheck();
+</script>
+</body>
+</html>
