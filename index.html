@@ -1,184 +1,240 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Agenda Clínica</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#1b2540;background:#f4f6fb;--blue:#5268e8;--line:#e7eaf1;--muted:#778198;--white:#fff}*{box-sizing:border-box}body{margin:0;background:#f4f6fb}button,input,select,textarea{font:inherit}button{cursor:pointer}[hidden]{display:none!important}
-.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 10%,#e3e9ff,transparent 35%),#f4f6fb}.login-card{width:min(410px,100%);background:#fff;padding:34px;border:1px solid var(--line);border-radius:22px;box-shadow:0 20px 65px #22345a12}.mark{width:52px;height:52px;border-radius:16px;background:#edf0ff;color:var(--blue);display:grid;place-items:center;font-size:25px;font-weight:800}.login h1{font-size:23px;margin:17px 0 4px}.login p{font-size:13px;color:var(--muted);margin:0 0 23px}.login label,.field-label{display:block;font-weight:650;font-size:12px;color:#536078;margin:0 0 6px}.input{width:100%;border:1px solid #dfe4ed;border-radius:9px;background:#fff;padding:10px 11px;outline:none;color:#1b2540}.input:focus{border-color:#8c9bf2;box-shadow:0 0 0 3px #5268e817}.login .input{margin-bottom:15px}.error{min-height:18px;color:#bc3e50;font-size:12px}.demo{background:#f6f7fb;padding:12px;border-radius:10px;color:#69758b;font-size:11px;line-height:1.8;margin-top:15px}
-button{border:1px solid var(--line);background:#fff;color:#4b5870;border-radius:9px;padding:9px 12px;font-size:12px;font-weight:650}button:hover{background:#f7f8fc}.primary{background:var(--blue);border-color:var(--blue);color:#fff}.primary:hover{background:#4056d0}.app{max-width:1200px;margin:auto;padding:24px 18px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}.brand{display:flex;align-items:center;gap:11px}.brand-icon{width:44px;height:44px;border-radius:14px;background:#e9edff;color:var(--blue);display:grid;place-items:center;font-size:22px;font-weight:800;overflow:hidden}.brand-icon img,.clinic-logo img{width:100%;height:100%;object-fit:cover}.brand h1{font-size:18px;margin:0}.brand p{font-size:11px;color:var(--muted);margin:4px 0 0}.top-right{display:flex;align-items:center;gap:8px}.pill{font-size:11px;color:#4356c5;background:#edf0ff;padding:8px 10px;border-radius:20px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:15px}.stat,.panel{background:#fff;border:1px solid var(--line);border-radius:14px}.stat{padding:14px 16px}.stat small{color:var(--muted);font-size:11px}.stat strong{display:block;font-size:23px;margin-top:5px}.shell{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px #25375b0b}.tabs{display:flex;gap:4px;padding:11px 14px;border-bottom:1px solid var(--line);overflow:auto}.tab{border:0;background:transparent;color:#657187;white-space:nowrap}.tab.active{background:#edf0ff;color:#4057d1}.content{padding:18px}.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.heading h2{font-size:16px;margin:0}.heading p{color:var(--muted);font-size:11px;margin:4px 0 0}.actions{display:flex;gap:7px;align-items:center}.filters{display:grid;grid-template-columns:1fr 160px;gap:9px;margin-bottom:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:760px}th{text-align:left;background:#fafbfe;color:#8490a4;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:11px}td{padding:11px;border-top:1px solid var(--line);font-size:11px;vertical-align:middle}td b{font-size:11px}td small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#eef1f7;color:#59667c;font-size:9px;font-weight:700}.Agendada{background:#fff2d9;color:#98640d}.Confirmada{background:#e5f6ed;color:#218151}.Reagendado{background:#e6f3ff;color:#2870a8}.Concluída{background:#edf0ff;color:#4e63cb}.Cancelada{background:#ffeaec;color:#b74653}.mini{padding:5px 7px;font-size:10px}.danger:hover{color:#b74653;border-color:#edb9c0}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;padding:13px}.card h3{font-size:12px;margin:0}.card p{font-size:10px;color:var(--muted);line-height:1.55;margin:5px 0 0}.clinic-logo{width:40px;height:40px;border-radius:11px;background:#edf0ff;color:var(--blue);display:grid;place-items:center;overflow:hidden;flex:none}.card-main{display:flex;align-items:center;gap:10px;min-width:0}.empty{text-align:center;padding:25px;color:var(--muted);font-size:12px}.note{font-size:10px;color:var(--muted);margin-top:12px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1b2540;color:white;padding:10px 14px;border-radius:9px;font-size:12px;display:none;z-index:8}.toast.show{display:block}
-dialog{width:min(550px,calc(100% - 24px));max-height:90vh;border:0;border-radius:16px;padding:0;box-shadow:0 24px 80px #07102755}dialog::backdrop{background:#18223877}.modal-head{display:flex;justify-content:space-between;align-items:flex-start;padding:17px 19px 13px;border-bottom:1px solid var(--line)}.modal-head h2{font-size:16px;margin:0}.modal-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.form{padding:16px 19px 19px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.group.full{grid-column:1/-1}.group textarea{resize:vertical;min-height:60px}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.preview{width:48px;height:48px;border-radius:11px;background:#edf0ff;color:var(--blue);display:grid;place-items:center;overflow:hidden;flex:none}.preview img{width:100%;height:100%;object-fit:cover}
-@media(max-width:650px){.app{padding:15px 10px 30px}.top{align-items:flex-start}.top-right{flex-direction:column;align-items:flex-end}.stats{gap:7px}.stat{padding:11px}.stat strong{font-size:19px}.content{padding:13px 10px}.heading{align-items:flex-start;flex-direction:column}.heading .actions{width:100%}.heading .actions button{flex:1}.filters{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.group.full{grid-column:auto}.brand h1{font-size:16px}.pill{font-size:9px}}
+:root{font:14px Inter,system-ui,sans-serif;color:#1b2540;background:#f4f6fb;--blue:#5268e8;--line:#e7eaf1;--muted:#778198;--white:#fff}*{box-sizing:border-box}body{margin:0;background:#f4f6fb}button,input,select,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#fff;color:#46536b;border-radius:9px;padding:9px 12px;font-weight:650}button:hover{background:#f7f8fc}.primary{background:var(--blue);border-color:var(--blue);color:white}.primary:hover{background:#4056d0}.danger{color:#b74653}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 10%,#e3e9ff,transparent 35%),#f4f6fb}.login-card,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:16px}.login-card{width:min(420px,100%);padding:30px;box-shadow:0 20px 65px #22345a12}.login h1{font-size:23px;margin:0 0 5px}.muted,.login p{color:var(--muted);font-size:12px}.login p{margin:0 0 20px}.login label,.field-label{display:block;font-weight:650;font-size:12px;color:#536078;margin-bottom:6px}.input{width:100%;border:1px solid #dfe4ed;border-radius:9px;padding:10px 11px;background:#fff;color:#1b2540;outline:none}.input:focus{border-color:#8c9bf2;box-shadow:0 0 0 3px #5268e817}.login .input{margin-bottom:14px}.error{color:#b74653;min-height:18px;font-size:12px}.app{max-width:1200px;margin:auto;padding:22px 18px 50px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.top h1{font-size:19px;margin:0}.top p{margin:4px 0 0}.top-right,.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.pill{font-size:11px;color:#4356c5;background:#edf0ff;padding:8px 10px;border-radius:20px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px}.stat{padding:13px 15px}.stat small{color:var(--muted);font-size:11px}.stat strong{display:block;font-size:22px;margin-top:4px}.panel{overflow:hidden}.tabs{display:flex;gap:4px;padding:10px 13px;border-bottom:1px solid var(--line);overflow:auto}.tab{border:0;background:transparent;white-space:nowrap;color:#657187}.tab.active{background:#edf0ff;color:#4057d1}.content{padding:17px}.page[hidden],.app[hidden],.login[hidden]{display:none!important}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.heading h2{font-size:16px;margin:0}.heading p{margin:4px 0 0}.filters{display:grid;grid-template-columns:1fr 165px;gap:9px;margin-bottom:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:760px}th{text-align:left;background:#fafbfe;color:#8490a4;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:11px}td{padding:10px;border-top:1px solid var(--line);font-size:11px;vertical-align:middle}td small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#eef1f7;color:#59667c;font-size:9px;font-weight:700}.Agendada{background:#fff2d9;color:#98640d}.Confirmada{background:#e5f6ed;color:#218151}.Reagendado{background:#e6f3ff;color:#2870a8}.Concluída{background:#edf0ff;color:#4e63cb}.Cancelada{background:#ffeaec;color:#b74653}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;padding:13px}.card h3{font-size:12px;margin:0}.card p{font-size:11px;color:var(--muted);line-height:1.5;margin:5px 0 0}.empty{padding:23px;text-align:center;color:var(--muted);font-size:12px}.note{font-size:11px;color:var(--muted);margin:10px 0}.mini{padding:6px 8px;font-size:10px}dialog{width:min(580px,calc(100% - 24px));max-height:90vh;border:0;border-radius:15px;padding:0;box-shadow:0 24px 80px #07102755}dialog::backdrop{background:#18223877}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}.modal-head h2{font-size:16px;margin:0}.form{padding:16px 18px 18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.group.full{grid-column:1/-1}.group textarea{resize:vertical;min-height:65px}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1b2540;color:white;padding:10px 14px;border-radius:9px;font-size:12px;display:none;z-index:8}.toast.show{display:block}.logo{width:36px;height:36px;object-fit:cover;border-radius:9px;vertical-align:middle;margin-right:8px}
+@media(max-width:650px){.app{padding:13px 10px 30px}.top{align-items:flex-start}.top-right{flex-direction:column;align-items:flex-end}.stats{gap:6px}.stat{padding:10px}.stat strong{font-size:18px}.content{padding:12px 10px}.heading{align-items:flex-start;flex-direction:column}.heading .actions{width:100%}.heading .actions button{flex:1}.filters{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.group.full{grid-column:auto}}
 </style>
 </head>
 <body>
 <section class="login" id="loginScreen">
-<form class="login-card" id="loginForm">
-<div class="mark">✚</div><h1>Agenda Clínica</h1><p>Entre com seus dados para acessar a agenda.</p>
-<label for="loginUser">Usuário</label><input class="input" id="loginUser" autocomplete="username" required placeholder="Digite seu usuário">
-<label for="loginPass">Senha</label><input class="input" id="loginPass" type="password" autocomplete="current-password" required placeholder="Digite sua senha">
-<div class="error" id="loginError" role="alert"></div><button class="primary" style="width:100%;padding:11px" type="submit">Entrar</button>
-<div class="demo"><b>Acessos de demonstração</b><br>Master: <code>admin</code> / <code>admin123</code><br>Usuário: <code>recepcao</code> / <code>recepcao123</code></div>
-</form></section>
-
-<div id="appScreen" hidden><main class="app">
-<header class="top"><div class="brand"><div class="brand-icon" id="brandLogo">✚</div><div><h1 id="brandName">Agenda Clínica</h1><p>Consultas, pacientes e equipe</p></div></div><div class="top-right"><span class="pill" id="userRole"></span><button id="logoutBtn">Sair</button></div></header>
-<section class="stats"><div class="stat"><small>Consultas no mês</small><strong id="statMonth">0</strong></div><div class="stat"><small>Próximas consultas</small><strong id="statUpcoming">0</strong></div><div class="stat"><small>Pacientes cadastrados</small><strong id="statPatients">0</strong></div></section>
-<div class="shell"><nav class="tabs"><button class="tab active" data-tab="appointments">Agenda</button><button class="tab" data-tab="patients">Pacientes</button><button class="tab" data-tab="doctors">Médicos</button><button class="tab" data-tab="clinics" id="clinicTab" hidden>Clínicas</button></nav>
-<section class="content" id="appointmentsPage"><div class="heading"><div><h2>Consultas</h2><p>Cadastre, edite e acompanhe os agendamentos.</p></div><div class="actions"><button id="clearSamples">Limpar exemplos</button><button class="primary" id="addAppointment">＋ Nova consulta</button></div></div><div class="filters"><input class="input" id="searchAppointments" placeholder="Buscar paciente, médico, clínica ou status"><input class="input" type="month" id="monthFilter" aria-label="Filtrar por mês"></div><div class="table-wrap"><table><thead><tr><th>Paciente</th><th>Data e hora</th><th>Especialidade</th><th>Médico</th><th>Clínica</th><th>Status</th><th>Ações</th></tr></thead><tbody id="appointmentRows"></tbody></table><div class="empty" id="appointmentEmpty" hidden>Nenhuma consulta encontrada.</div></div><p class="note" id="storageNote" hidden>O navegador não conseguiu salvar os dados. Eles podem não permanecer após fechar a página.</p></section>
-<section class="content" id="patientsPage" hidden><div class="heading"><div><h2>Pacientes</h2><p>Cadastre e atualize os dados dos pacientes.</p></div><button class="primary" id="addPatient">＋ Novo paciente</button></div><div class="filters" style="grid-template-columns:1fr"><input class="input" id="searchPatients" placeholder="Buscar paciente por nome, telefone ou e-mail"></div><div class="cards" id="patientCards"></div><div class="empty" id="patientEmpty" hidden>Nenhum paciente encontrado.</div></section>
-<section class="content" id="doctorsPage" hidden><div class="heading"><div><h2>Médicos</h2><p>Cadastre profissionais e associe-os às clínicas.</p></div><button class="primary" id="addDoctor">＋ Novo médico</button></div><div class="filters" style="grid-template-columns:1fr"><input class="input" id="searchDoctors" placeholder="Buscar médico, especialidade ou clínica"></div><div class="cards" id="doctorCards"></div><div class="empty" id="doctorEmpty" hidden>Nenhum médico encontrado.</div></section>
-<section class="content" id="clinicsPage" hidden><div class="heading"><div><h2>Clínicas</h2><p>Área restrita ao usuário Master. Nome e logo personalizáveis.</p></div><button class="primary" id="addClinic">＋ Nova clínica</button></div><div class="cards" id="clinicCards"></div><div class="empty" id="clinicEmpty" hidden>Nenhuma clínica cadastrada.</div></section>
-</div></main></div>
-
-<dialog id="modal"><div class="modal-head"><div><h2 id="modalTitle"></h2><p id="modalSubtitle"></p></div><button type="button" id="closeModal">×</button></div><form class="form" id="entityForm"></form></dialog>
+  <form class="login-card" id="loginForm">
+    <h1>Agenda Clínica</h1><p>Acesse com seu e-mail e senha.</p>
+    <label for="email">E-mail</label><input class="input" id="email" type="email" required autocomplete="username">
+    <label for="password">Senha</label><input class="input" id="password" type="password" required autocomplete="current-password">
+    <div class="error" id="loginError"></div><button class="primary" style="width:100%" type="submit">Entrar</button>
+  </form>
+</section>
+<main class="app" id="appScreen" hidden>
+  <header class="top"><div><h1 id="brandName">Agenda Clínica</h1><p class="muted" id="userInfo"></p></div><div class="top-right"><span class="pill" id="rolePill"></span><button id="logout">Sair</button></div></header>
+  <section class="stats"><div class="stat"><small>Consultas no mês</small><strong id="statMonth">0</strong></div><div class="stat"><small>Próximas consultas</small><strong id="statUpcoming">0</strong></div><div class="stat"><small>Pacientes cadastrados</small><strong id="statPatients">0</strong></div></section>
+  <section class="panel">
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-page="appointments">Agenda</button><button class="tab" data-page="patients">Pacientes</button><button class="tab" data-page="doctors">Médicos</button><button class="tab" data-page="clinics" id="clinicsTab" hidden>Clínicas</button><button class="tab" data-page="users" id="usersTab" hidden>Usuários</button>
+    </nav>
+    <section class="content page" id="appointmentsPage">
+      <div class="heading"><div><h2>Consultas</h2><p class="muted">Agendamentos da clínica vinculada à sua conta.</p></div><button class="primary" data-new="appointment">＋ Nova consulta</button></div>
+      <div class="filters"><input class="input" id="searchAppointments" placeholder="Buscar paciente, médico, clínica ou status"><input class="input" type="month" id="monthFilter" aria-label="Filtrar por mês"></div>
+      <div class="table-wrap"><table><thead><tr><th>Paciente</th><th>Data e hora</th><th>Especialidade</th><th>Médico</th><th>Clínica</th><th>Status</th><th>Ações</th></tr></thead><tbody id="appointmentRows"></tbody></table><div class="empty" id="appointmentEmpty" hidden>Nenhuma consulta encontrada.</div></div>
+    </section>
+    <section class="content page" id="patientsPage" hidden>
+      <div class="heading"><div><h2>Pacientes</h2><p class="muted">Cadastros da clínica vinculada à sua conta.</p></div><button class="primary" data-new="patient">＋ Novo paciente</button></div>
+      <div class="filters" style="grid-template-columns:1fr"><input class="input" id="searchPatients" placeholder="Buscar por nome, telefone ou e-mail"></div><div class="cards" id="patientCards"></div><div class="empty" id="patientEmpty" hidden>Nenhum paciente encontrado.</div>
+    </section>
+    <section class="content page" id="doctorsPage" hidden>
+      <div class="heading"><div><h2>Médicos</h2><p class="muted">Profissionais cadastrados nas clínicas.</p></div><button class="primary" data-new="doctor">＋ Novo médico</button></div>
+      <div class="filters" style="grid-template-columns:1fr"><input class="input" id="searchDoctors" placeholder="Buscar médico ou especialidade"></div><div class="cards" id="doctorCards"></div><div class="empty" id="doctorEmpty" hidden>Nenhum médico encontrado.</div>
+    </section>
+    <section class="content page" id="clinicsPage" hidden>
+      <div class="heading"><div><h2>Clínicas</h2><p class="muted">Área restrita ao Master.</p></div><button class="primary" data-new="clinic">＋ Nova clínica</button></div><div class="cards" id="clinicCards"></div><div class="empty" id="clinicEmpty" hidden>Nenhuma clínica cadastrada.</div>
+    </section>
+    <section class="content page" id="usersPage" hidden>
+      <div class="heading"><div><h2>Usuários</h2><p class="muted">Crie contas comuns vinculadas a uma clínica.</p></div><button class="primary" data-new="user">＋ Novo usuário</button></div><div class="cards" id="userCards"></div><div class="empty" id="userEmpty" hidden>Nenhum usuário cadastrado.</div>
+    </section>
+    <div class="content error" id="appError"></div>
+  </section>
+</main>
+<dialog id="modal"><div class="modal-head"><h2 id="modalTitle"></h2><button type="button" id="closeModal">×</button></div><form class="form" id="entityForm"><div class="form-grid" id="formFields"></div><div class="error" id="formError"></div><div class="form-actions"><button type="button" id="cancelModal">Voltar</button><button class="primary" type="submit">Salvar</button></div></form></dialog>
 <div class="toast" id="toast"></div>
 <script>
-(()=>{
+(() => {
 "use strict";
-const $=id=>document.getElementById(id), KEY="agenda_clinica_login_v3";
-const now=new Date(), pad=n=>String(n).padStart(2,"0"), dateString=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, monthString=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}`;
-const uid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2);
-const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let currentUser=null, saving=true, activeType="", editingId="";
-function samples(){
- const clinics=[{id:"c1",name:"Clínica Bem Viver",phone:"",address:"",logo:"",demo:true},{id:"c2",name:"Centro Médico Horizonte",phone:"",address:"",logo:"",demo:true}];
- const patients=[["p1","Marina Costa","(11) 98814-2031"],["p2","Rafael Mendes","(11) 97752-4618"],["p3","Camila Rocha","(11) 96631-7290"],["p4","Bruno Almeida","(11) 95542-1836"],["p5","Sofia Martins","(11) 94427-6501"]].map(x=>({id:x[0],name:x[1],phone:x[2],email:"",demo:true}));
- const doctors=[{id:"d1",name:"Dra. Paula Nunes",specialty:"Clínica geral",phone:"",clinicId:"c1",demo:true},{id:"d2",name:"Dr. André Lima",specialty:"Dermatologia",phone:"",clinicId:"c1",demo:true},{id:"d3",name:"Dra. Elisa Prado",specialty:"Nutrição",phone:"",clinicId:"c2",demo:true}];
- const days=[2,4,6,9,12,16], info=[[0,"c1","d1","Clínica geral","Agendada"],[1,"c1","d2","Dermatologia","Confirmada"],[2,"c2","d3","Nutrição","Agendada"],[3,"c1","d1","Clínica geral","Reagendado"],[4,"c2","d3","Nutrição","Agendada"],[0,"c1","d2","Dermatologia","Agendada"]];
- const max=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
- const appointments=info.map((x,i)=>({id:"a"+(i+1),patientId:patients[x[0]].id,clinicId:x[1],doctorId:x[2],date:`${monthString(now)}-${pad(Math.min(days[i],max))}`,time:["09:00","10:30","13:00","14:30","11:00","15:00"][i],specialty:x[3],status:x[4],demo:true}));
- return{clinics,patients,doctors,appointments};
+
+/* Troque estes dois valores pelos dados públicos do seu projeto Supabase. */
+const SUPABASE_URL = "https://hjpesatdtjmjumcyhjwh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqcGVzYXRkdGptanVtY3loandoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MDc0ODgsImV4cCI6MjEwNzA4MzQ4OH0.BaIItaTfCNceDfuIfgEEkWp1k8fT50yqgfqygKU2JSk";
+
+const $ = id => document.getElementById(id);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const state = { user:null, profile:null, clinics:[], patients:[], doctors:[], appointments:[], profiles:[], editing:null };
+const esc = v => String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const isMaster = () => state.profile?.role === "master";
+const find = (arr,id) => arr.find(x=>x.id===id);
+const clinicName = id => find(state.clinics,id)?.name || "Clínica";
+const patientName = id => find(state.patients,id)?.name || "Paciente";
+const doctorName = id => find(state.doctors,id)?.name || "Médico";
+const localMonth = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;};
+const currentClinic = () => state.profile?.clinic_id || "";
+function toast(text){const el=$("toast");el.textContent=text;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2600);}
+function options(items,selected="",label="Selecione"){return `<option value="">${label}</option>`+items.map(x=>`<option value="${esc(x.id)}" ${x.id===selected?"selected":""}>${esc(x.name)}</option>`).join("");}
+function field(label,name,value="",type="text",required=false,full=false){return `<div class="group ${full?"full":""}"><label class="field-label" for="f_${name}">${label}${required?" *":""}</label><input class="input" id="f_${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?"required":""}></div>`;}
+function selectField(label,name,items,selected="",required=true){return `<div class="group"><label class="field-label" for="f_${name}">${label}${required?" *":""}</label><select class="input" id="f_${name}" name="${name}" ${required?"required":""}>${options(items,selected)}</select></div>`;}
+function setPage(name){if((name==="clinics"||name==="users")&&!isMaster())name="appointments";document.querySelectorAll(".page").forEach(p=>p.hidden=p.id!==name+"Page");document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.page===name));}
+async function loadData(){
+  $("appError").textContent="";
+  const results=await Promise.all([
+    db.from("clinics").select("*").order("name"),
+    db.from("patients").select("*").order("name"),
+    db.from("doctors").select("*").order("name"),
+    db.from("appointments").select("*").order("scheduled_at"),
+    isMaster()?db.from("profiles").select("*").order("name"):Promise.resolve({data:[],error:null})
+  ]);
+  const failed=results.find(r=>r.error);if(failed)throw failed.error;
+  [state.clinics,state.patients,state.doctors,state.appointments,state.profiles]=results.map(r=>r.data||[]);
+  $("brandName").textContent=state.clinics[0]?.name||"Agenda Clínica";
+  $("rolePill").textContent=isMaster()?"Master":clinicName(currentClinic());
+  $("userInfo").textContent=state.profile?.name||state.user?.email||"";
+  render();
 }
-function load(){
- try{const raw=localStorage.getItem(KEY);if(!raw){const s=samples();localStorage.setItem(KEY,JSON.stringify(s));return s}
- const s=JSON.parse(raw);if(!s||!Array.isArray(s.clinics)||!Array.isArray(s.patients)||!Array.isArray(s.doctors)||!Array.isArray(s.appointments))throw Error("dados inválidos");
- return s}catch(e){saving=false;return samples()}
-}
-let data=load();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(data));saving=true}catch(e){saving=false} $("storageNote").hidden=saving}
-function byId(list,id){return list.find(x=>x.id===id)}
-function getPatient(id){return byId(data.patients,id)}
-function getDoctor(id){return byId(data.doctors,id)}
-function getClinic(id){return byId(data.clinics,id)}
-function isMaster(){return currentUser==="admin"}
-function showToast(text){const t=$("toast");t.textContent=text;t.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove("show"),2400)}
 function render(){
- renderBrand();renderStats();renderAppointments();renderPatients();renderDoctors();renderClinics();
+  $("clinicsTab").hidden=!isMaster();$("usersTab").hidden=!isMaster();
+  const q=$("searchAppointments").value.trim().toLocaleLowerCase("pt-BR"),month=$("monthFilter").value;
+  const rows=state.appointments.filter(a=>{
+    const p=patientName(a.patient_id),d=doctorName(a.doctor_id),c=clinicName(a.clinic_id);
+    const date=String(a.scheduled_at||"").slice(0,7);
+    return(!month||month===date)&&`${p} ${d} ${c} ${a.status||""} ${a.specialty||""}`.toLocaleLowerCase("pt-BR").includes(q);
+  }).sort((a,b)=>String(a.scheduled_at).localeCompare(String(b.scheduled_at)));
+  $("appointmentRows").innerHTML=rows.map(a=>{
+    const dt=new Date(a.scheduled_at);
+    return `<tr><td><b>${esc(patientName(a.patient_id))}</b><small>${esc(find(state.patients,a.patient_id)?.phone||"")}</small></td><td>${Number.isNaN(dt.getTime())?"":dt.toLocaleDateString("pt-BR")}<small>${Number.isNaN(dt.getTime())?"":dt.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</small></td><td>${esc(a.specialty||"")}</td><td>${esc(doctorName(a.doctor_id))}</td><td>${esc(clinicName(a.clinic_id))}</td><td><span class="badge ${esc(a.status||"")}">${esc(a.status||"")}</span></td><td><div class="actions"><button class="mini" data-edit="appointment" data-id="${esc(a.id)}">Editar</button>${a.status!=="Cancelada"?`<button class="mini danger" data-cancel="${esc(a.id)}">Cancelar</button>`:""}</div></td></tr>`;
+  }).join("");
+  $("appointmentEmpty").hidden=rows.length>0;
+  const qp=$("searchPatients").value.trim().toLocaleLowerCase("pt-BR");
+  const patients=state.patients.filter(p=>`${p.name||""} ${p.phone||""} ${p.email||""}`.toLocaleLowerCase("pt-BR").includes(qp));
+  $("patientCards").innerHTML=patients.map(p=>`<article class="card"><div><h3>${esc(p.name)}</h3><p>${esc(p.phone||"Telefone não informado")}${p.email?`<br>${esc(p.email)}`:""}</p></div><div class="actions"><button class="mini" data-edit="patient" data-id="${esc(p.id)}">Editar</button><button class="mini danger" data-delete="patient" data-id="${esc(p.id)}">Excluir</button></div></article>`).join("");
+  $("patientEmpty").hidden=patients.length>0;
+  const qd=$("searchDoctors").value.trim().toLocaleLowerCase("pt-BR");
+  const doctors=state.doctors.filter(d=>`${d.name||""} ${d.specialty||""} ${clinicName(d.clinic_id)}`.toLocaleLowerCase("pt-BR").includes(qd));
+  $("doctorCards").innerHTML=doctors.map(d=>`<article class="card"><div><h3>${esc(d.name)}</h3><p>${esc(d.specialty||"")}${d.phone?`<br>${esc(d.phone)}`:""}<br>${esc(clinicName(d.clinic_id))}</p></div><div class="actions"><button class="mini" data-edit="doctor" data-id="${esc(d.id)}">Editar</button><button class="mini danger" data-delete="doctor" data-id="${esc(d.id)}">Excluir</button></div></article>`).join("");
+  $("doctorEmpty").hidden=doctors.length>0;
+  $("clinicCards").innerHTML=state.clinics.map(c=>`<article class="card"><div>${c.logo?`<img class="logo" src="${esc(c.logo)}" alt="">`:""}<h3 style="display:inline">${esc(c.name)}</h3><p>${esc(c.phone||"Telefone não informado")}${c.address?`<br>${esc(c.address)}`:""}</p></div><div class="actions"><button class="mini" data-edit="clinic" data-id="${esc(c.id)}">Editar</button><button class="mini danger" data-delete="clinic" data-id="${esc(c.id)}">Excluir</button></div></article>`).join("");
+  $("clinicEmpty").hidden=state.clinics.length>0;
+  $("userCards").innerHTML=state.profiles.map(p=>`<article class="card"><div><h3>${esc(p.name||"Usuário")}</h3><p>${p.role==="master"?"Master":`Usuário comum · ${esc(clinicName(p.clinic_id))}`}</p></div></article>`).join("");
+  $("userEmpty").hidden=state.profiles.length>0;
+  const today=new Date();today.setHours(0,0,0,0);
+  $("statMonth").textContent=state.appointments.filter(a=>String(a.scheduled_at||"").slice(0,7)===localMonth()&&a.status!=="Cancelada").length;
+  $("statUpcoming").textContent=state.appointments.filter(a=>new Date(a.scheduled_at)>=today&&["Agendada","Confirmada","Reagendado"].includes(a.status)).length;
+  $("statPatients").textContent=state.patients.length;
 }
-function renderBrand(){const c=data.clinics[0];$("brandName").textContent=c?.name||"Agenda Clínica";$("brandLogo").innerHTML=c?.logo?`<img src="${esc(c.logo)}" alt="Logo">`:"✚"}
-function renderStats(){
- const m=$("monthFilter").value,t=dateString(now);
- $("statMonth").textContent=data.appointments.filter(a=>a.date?.startsWith(m)&&a.status!=="Cancelada").length;
- $("statUpcoming").textContent=data.appointments.filter(a=>a.date>=t&&["Agendada","Confirmada","Reagendado"].includes(a.status)).length;
- $("statPatients").textContent=data.patients.length
-}
-function renderAppointments(){
- const q=$("searchAppointments").value.trim().toLocaleLowerCase("pt-BR"),m=$("monthFilter").value;
- const rows=data.appointments.filter(a=>{const p=getPatient(a.patientId),d=getDoctor(a.doctorId),c=getClinic(a.clinicId);return(!m||a.date?.startsWith(m))&&[p?.name,d?.name,c?.name,a.specialty,a.status].join(" ").toLocaleLowerCase("pt-BR").includes(q)}).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
- $("appointmentRows").innerHTML=rows.map(a=>`<tr><td><b>${esc(getPatient(a.patientId)?.name||"Paciente")}</b><small>${esc(getPatient(a.patientId)?.phone||"")}</small></td><td>${esc(new Date(a.date+"T12:00:00").toLocaleDateString("pt-BR"))}<small>${esc(a.time)}</small></td><td>${esc(a.specialty)}</td><td>${esc(getDoctor(a.doctorId)?.name||"Não informado")}</td><td>${esc(getClinic(a.clinicId)?.name||"Não informada")}</td><td><span class="badge ${esc(a.status)}">${esc(a.status)}</span></td><td><div class="actions"><button class="mini" data-edit="appointment" data-id="${esc(a.id)}">Editar</button>${a.status!=="Cancelada"?`<button class="mini danger" data-cancel="${esc(a.id)}">Cancelar</button>`:""}</div></td></tr>`).join("");
- $("appointmentEmpty").hidden=rows.length>0;renderStats()
-}
-function renderPatients(){
- const q=$("searchPatients").value.trim().toLocaleLowerCase("pt-BR"),arr=data.patients.filter(p=>[p.name,p.phone,p.email].join(" ").toLocaleLowerCase("pt-BR").includes(q));
- $("patientCards").innerHTML=arr.map(p=>`<article class="card"><div><h3>${esc(p.name)}</h3><p>${esc(p.phone||"Telefone não informado")}${p.email?"<br>"+esc(p.email):""}</p></div><div class="actions"><button class="mini" data-edit="patient" data-id="${esc(p.id)}">Editar</button><button class="mini danger" data-delete="patient" data-id="${esc(p.id)}">Excluir</button></div></article>`).join("");
- $("patientEmpty").hidden=arr.length>0;renderStats()
-}
-function renderDoctors(){
- const q=$("searchDoctors").value.trim().toLocaleLowerCase("pt-BR"),arr=data.doctors.filter(d=>[d.name,d.specialty,getClinic(d.clinicId)?.name].join(" ").toLocaleLowerCase("pt-BR").includes(q));
- $("doctorCards").innerHTML=arr.map(d=>`<article class="card"><div class="card-main"><div class="clinic-logo">♙</div><div><h3>${esc(d.name)}</h3><p>${esc(d.specialty)}<br>${esc(getClinic(d.clinicId)?.name||"Clínica não encontrada")}${d.phone?"<br>"+esc(d.phone):""}</p></div></div><div class="actions"><button class="mini" data-edit="doctor" data-id="${esc(d.id)}">Editar</button><button class="mini danger" data-delete="doctor" data-id="${esc(d.id)}">Excluir</button></div></article>`).join("");
- $("doctorEmpty").hidden=arr.length>0
-}
-function renderClinics(){
- const allowed=isMaster();$("clinicTab").hidden=!allowed;
- $("clinicCards").innerHTML=data.clinics.map(c=>`<article class="card"><div class="card-main"><div class="clinic-logo">${c.logo?`<img src="${esc(c.logo)}" alt="Logo">`:"✚"}</div><div><h3>${esc(c.name)}</h3><p>${esc(c.phone||"Telefone não informado")}${c.address?"<br>"+esc(c.address):""}</p></div></div><div class="actions"><button class="mini" data-edit="clinic" data-id="${esc(c.id)}">Editar</button><button class="mini danger" data-delete="clinic" data-id="${esc(c.id)}">Excluir</button></div></article>`).join("");
- $("clinicEmpty").hidden=data.clinics.length>0
-}
-function showPage(name){
- if(name==="clinics"&&!isMaster())name="appointments";
- ["appointments","patients","doctors","clinics"].forEach(x=>$(x+"Page").hidden=x!==name);
- document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===name))
-}
-function options(list,selected,label){return `<option value="">Selecione ${label}</option>`+list.map(x=>`<option value="${esc(x.id)}" ${x.id===selected?"selected":""}>${esc(x.name)}</option>`).join("")}
-function field(label,name,value="",type="text",required=false,extra=""){return `<div class="group"><label class="field-label" for="f_${name}">${label}${required?" *":""}</label><input class="input" id="f_${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?"required":""} ${extra}></div>`}
-function selectField(label,name,list,selected,required=true){return `<div class="group"><label class="field-label" for="f_${name}">${label}${required?" *":""}</label><select class="input" id="f_${name}" name="${name}" ${required?"required":""}>${options(list,selected,label.toLowerCase())}</select></div>`}
 function openForm(type,id=""){
- if(type==="clinic"&&!isMaster())return;
- const old=id?byId(data[type==="appointment"?"appointments":type==="patient"?"patients":type==="doctor"?"doctors":"clinics"],id):{};
- activeType=type;editingId=id;
- const names={appointment:"consulta",patient:"paciente",doctor:"médico",clinic:"clínica"};
- $("modalTitle").textContent=(id?"Editar ":"Novo ")+names[type];$("modalSubtitle").textContent=type==="appointment"?"Informe os dados do agendamento.":"Preencha os dados do cadastro.";
- let html="";
- if(type==="appointment"){
- if(!data.patients.length||!data.clinics.length||!data.doctors.length){showToast("Cadastre pacientes, clínicas e médicos antes de agendar.");return}
- html=`<div class="form-grid">${selectField("Paciente","patientId",data.patients,old.patientId)}${selectField("Clínica","clinicId",data.clinics,old.clinicId)}${selectField("Médico","doctorId",data.doctors.filter(d=>!old.clinicId||d.clinicId===old.clinicId),old.doctorId)}${field("Data","date",old.date||dateString(now),"date",true)}${field("Horário","time",old.time||"09:00","time",true)}${field("Especialidade","specialty",old.specialty||"", "text",true,'maxlength="80"')}<div class="group"><label class="field-label" for="f_status">Status</label><select class="input" id="f_status" name="status">${["Agendada","Confirmada","Reagendado","Concluída","Cancelada"].map(s=>`<option ${s===(old.status||"Agendada")?"selected":""}>${s}</option>`).join("")}</select></div><div class="group full"><label class="field-label" for="f_notes">Observações</label><textarea class="input" id="f_notes" name="notes" maxlength="500">${esc(old.notes||"")}</textarea></div></div><p class="note">Não é permitido marcar duas consultas ativas na mesma clínica, data e horário.</p>`
- }else if(type==="patient"){
- html=`<div class="form-grid">${field("Nome completo","name",old.name||"", "text",true,'maxlength="100"')}${field("Telefone","phone",old.phone||"","tel",false,'maxlength="25"')}${field("E-mail","email",old.email||"","email",false,'maxlength="120"')}${field("Nascimento","birth",old.birth||"","date")}</div>`
- }else if(type==="doctor"){
- if(!data.clinics.length){showToast("Cadastre uma clínica antes de cadastrar médicos.");return}
- html=`<div class="form-grid">${field("Nome do médico","name",old.name||"", "text",true,'maxlength="100"')}${field("Especialidade","specialty",old.specialty||"", "text",true,'maxlength="80"')}${selectField("Clínica","clinicId",data.clinics,old.clinicId)}${field("Telefone profissional","phone",old.phone||"","tel",false,'maxlength="25"')}</div>`
- }else{
- html=`<div class="form-grid">${field("Nome da clínica","name",old.name||"", "text",true,'maxlength="100"')}${field("Telefone","phone",old.phone||"","tel",false,'maxlength="25"')}${field("Endereço","address",old.address||"","text",false,'maxlength="160"')}<div class="group full"><label class="field-label">Logo da clínica</label><div class="actions"><div class="preview" id="logoPreview">${old.logo?`<img src="${esc(old.logo)}" alt="Logo">`:"✚"}</div><input class="input" style="max-width:330px" type="file" id="logoFile" accept="image/*"><button type="button" id="removeLogo">Remover logo</button></div><input type="hidden" name="logo" id="logoValue" value="${esc(old.logo||"")}"><small class="note">Imagem de até 1 MB, armazenada neste navegador.</small></div></div>`
- }
- html+=`<div class="form-actions"><button type="button" id="cancelModal">Voltar</button><button class="primary" type="submit">Salvar</button></div>`;
- $("entityForm").innerHTML=html;
- if(type==="appointment"){
- $("f_clinicId").addEventListener("change",()=>{$("f_doctorId").innerHTML=options(data.doctors.filter(d=>d.clinicId===$("f_clinicId").value),"","médico")});
- }
- if(type==="clinic"){
- $("logoFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>1024*1024){showToast("Escolha uma imagem de até 1 MB.");e.target.value="";return}const reader=new FileReader();reader.onload=()=>{$("logoValue").value=String(reader.result);$("logoPreview").innerHTML=`<img src="${esc(reader.result)}" alt="Logo">`};reader.readAsDataURL(f)});
- $("removeLogo").addEventListener("click",()=>{$("logoValue").value="";$("logoPreview").textContent="✚";$("logoFile").value=""})
- }
- $("cancelModal").addEventListener("click",()=> $("modal").close());
- $("modal").showModal()
+  const map={appointment:"appointments",patient:"patients",doctor:"doctors",clinic:"clinics"};
+  if((type==="clinic"||type==="user")&&!isMaster())return;
+  const old=id&&map[type]?find(state[map[type]],id)||{}:{};
+  state.editing={type,id};
+  $("formError").textContent="";
+  $("modalTitle").textContent=(id?"Editar ":"Novo ")+({appointment:"agendamento",patient:"paciente",doctor:"médico",clinic:"clínica",user:"usuário"}[type]);
+  let html="";
+  if(type==="patient"){
+    html=field("Nome completo","name",old.name||"","text",true)+field("Telefone","phone",old.phone||"","tel")+field("E-mail","email",old.email||"","email")+field("Nascimento","birth",old.birth||"","date");
+    if(isMaster())html+=selectField("Clínica","clinic_id",state.clinics,old.clinic_id||"");
+  }else if(type==="doctor"){
+    html=field("Nome do médico","name",old.name||"","text",true)+field("Especialidade","specialty",old.specialty||"","text",true)+field("Telefone profissional","phone",old.phone||"","tel");
+    html+=isMaster()?selectField("Clínica","clinic_id",state.clinics,old.clinic_id||""):selectField("Clínica","clinic_id",state.clinics,currentClinic());
+  }else if(type==="clinic"){
+    html=field("Nome da clínica","name",old.name||"","text",true)+field("Telefone","phone",old.phone||"","tel")+field("Endereço","address",old.address||"","text",false,true)+field("Logo (URL)","logo",old.logo||"","url",false,true);
+  }else if(type==="appointment"){
+    if(!state.patients.length||!state.doctors.length||!state.clinics.length){toast("Cadastre clínica, paciente e médico antes de agendar.");return;}
+    const clinicId=old.clinic_id||currentClinic()||state.clinics[0].id;
+    const dt=old.scheduled_at?new Date(old.scheduled_at):new Date();
+    const date=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+    const time=`${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}`;
+    if(isMaster())html+=selectField("Clínica","clinic_id",state.clinics,clinicId);
+    else html+=`<input type="hidden" name="clinic_id" value="${esc(currentClinic())}">`;
+    html+=selectField("Paciente","patient_id",state.patients.filter(p=>!p.clinic_id||p.clinic_id===clinicId),old.patient_id||"");
+    html+=selectField("Médico","doctor_id",state.doctors.filter(d=>d.clinic_id===clinicId),old.doctor_id||"");
+    html+=field("Data","date",date,"date",true)+field("Horário","time",time,"time",true)+field("Especialidade","specialty",old.specialty||"","text",true);
+    html+=`<div class="group"><label class="field-label">Status</label><select class="input" name="status">${["Agendada","Confirmada","Reagendado","Concluída","Cancelada"].map(s=>`<option ${s===(old.status||"Agendada")?"selected":""}>${s}</option>`).join("")}</select></div><div class="group full"><label class="field-label">Observações</label><textarea class="input" name="notes" maxlength="500">${esc(old.notes||"")}</textarea></div>`;
+  }else if(type==="user"){
+    html=field("Nome","name","","text",true)+field("E-mail","email","","email",true)+field("Senha inicial (mínimo 8 caracteres)","password","","password",true)+selectField("Clínica","clinic_id",state.clinics,"");
+  }
+  $("formFields").innerHTML=html;
+  if(type==="appointment"&&isMaster()){
+    const clinic=$("entityForm").elements.namedItem("clinic_id");
+    clinic.addEventListener("change",()=>{
+      const c=clinic.value;
+      $("entityForm").elements.namedItem("patient_id").innerHTML=options(state.patients.filter(p=>!p.clinic_id||p.clinic_id===c));
+      $("entityForm").elements.namedItem("doctor_id").innerHTML=options(state.doctors.filter(d=>d.clinic_id===c));
+    });
+  }
+  $("modal").showModal();
 }
-function submitEntity(e){
- e.preventDefault();const fd=new FormData(e.currentTarget),v=Object.fromEntries(fd.entries()),type=activeType,id=editingId;
- if(type==="appointment"){
- const clash=data.appointments.some(a=>a.id!==id&&a.clinicId===v.clinicId&&a.date===v.date&&a.time===v.time&&a.status!=="Cancelada"&&v.status!=="Cancelada");
- if(clash){showToast("Já existe consulta ativa nesse horário e clínica.");return}
- const record={id:id||uid(),...v,demo:false};
- if(id)data.appointments=data.appointments.map(a=>a.id===id?{...a,...record}:a);else data.appointments.push(record)
- }else{
- if(type==="clinic"&&!isMaster())return;
- const listName=type==="patient"?"patients":type==="doctor"?"doctors":"clinics",record={id:id||uid(),...v,demo:false};
- if(id)data[listName]=data[listName].map(x=>x.id===id?{...x,...record}:x);else data[listName].push(record)
- }
- save();$("modal").close();render();showToast(id?"Cadastro atualizado.":"Cadastro salvo.")
+async function saveEntity(e){
+  e.preventDefault();$("formError").textContent="";
+  const {type,id}=state.editing,values=Object.fromEntries(new FormData(e.currentTarget).entries());
+  try{
+    if(type==="user"){
+      const {error}=await db.functions.invoke("create-user",{body:{name:values.name,email:values.email,password:values.password,clinic_id:values.clinic_id}});
+      if(error)throw error;
+    }else{
+      const table={appointment:"appointments",patient:"patients",doctor:"doctors",clinic:"clinics"}[type];
+      if(type==="appointment"){
+        values.scheduled_at=new Date(`${values.date}T${values.time}:00`).toISOString();
+        delete values.date;delete values.time;
+      }
+      if(["patient","doctor","appointment"].includes(type)&&!isMaster())values.clinic_id=currentClinic();
+      if(type==="patient"&&!values.birth)delete values.birth;
+      if(type==="patient"&&!values.email)delete values.email;
+      if(type==="patient"&&!values.phone)delete values.phone;
+      if(type==="doctor"&&!values.phone)delete values.phone;
+      if(type==="appointment"&&!values.notes)delete values.notes;
+      const result=id?await db.from(table).update(values).eq("id",id):await db.from(table).insert(values);
+      if(result.error)throw result.error;
+    }
+    $("modal").close();await loadData();toast(id?"Cadastro atualizado.":"Cadastro salvo.");
+  }catch(err){$("formError").textContent=err.message||"Não foi possível salvar.";}
 }
-$("loginForm").addEventListener("submit",e=>{
- e.preventDefault();
- const user=$("loginUser").value.trim().toLowerCase(),pass=$("loginPass").value;
- const accounts={admin:{password:"admin123",role:"Master"},recepcao:{password:"recepcao123",role:"Usuário"}};
- if(!accounts[user]||accounts[user].password!==pass){$("loginError").textContent="Usuário ou senha incorretos. Confira os acessos de demonstração abaixo.";return}
- currentUser=user;$("loginError").textContent="";$("loginScreen").hidden=true;$("appScreen").hidden=false;$("userRole").textContent=accounts[user].role;
- $("monthFilter").value=monthString(now);showPage("appointments");render()
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();$("loginError").textContent="";
+  if(SUPABASE_URL.includes("COLE_")||SUPABASE_ANON_KEY.includes("COLE_")){$("loginError").textContent="Preencha SUPABASE_URL e SUPABASE_ANON_KEY no início do código.";return;}
+  const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+  if(error){$("loginError").textContent=error.message;return;}
+  try{
+    const {data:profile,error:profileError}=await db.from("profiles").select("*").eq("id",data.user.id).single();
+    if(profileError||!profile)throw new Error("Perfil não encontrado. Configure o perfil deste usuário no Supabase.");
+    state.user=data.user;state.profile=profile;
+    $("loginScreen").hidden=true;$("appScreen").hidden=false;$("monthFilter").value=localMonth();
+    await loadData();setPage("appointments");
+  }catch(err){$("loginError").textContent=err.message;await db.auth.signOut();}
 });
-$("logoutBtn").addEventListener("click",()=>{currentUser=null;$("appScreen").hidden=true;$("loginScreen").hidden=false;$("loginPass").value="";$("loginUser").value="";$("loginError").textContent=""});
-document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.tab)));
-$("addAppointment").onclick=()=>openForm("appointment");$("addPatient").onclick=()=>openForm("patient");$("addDoctor").onclick=()=>openForm("doctor");$("addClinic").onclick=()=>openForm("clinic");
-$("closeModal").onclick=()=> $("modal").close();$("entityForm").addEventListener("submit",submitEntity);
-$("monthFilter").value=monthString(now);
-$("monthFilter").addEventListener("input",renderAppointments);$("searchAppointments").addEventListener("input",renderAppointments);$("searchPatients").addEventListener("input",renderPatients);$("searchDoctors").addEventListener("input",renderDoctors);
-document.addEventListener("click",e=>{
- const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]"),cancel=e.target.closest("[data-cancel]");
- if(edit){openForm(edit.dataset.edit,edit.dataset.id);return}
- if(cancel){const a=byId(data.appointments,cancel.dataset.cancel);if(a&&confirm("Cancelar este agendamento?")){a.status="Cancelada";a.demo=false;save();render();showToast("Consulta cancelada.")}return}
- if(del){
- const type=del.dataset.delete,id=del.dataset.id,listName=type==="patient"?"patients":type==="doctor"?"doctors":"clinics",list=data[listName],item=byId(list,id);
- if(type==="clinic"&&!isMaster())return;
- const linked=type==="patient"?data.appointments.some(a=>a.patientId===id):type==="doctor"?data.appointments.some(a=>a.doctorId===id):data.appointments.some(a=>a.clinicId===id)||data.doctors.some(d=>d.clinicId===id);
- if(linked){showToast("Não é possível excluir: há consultas ou cadastros vinculados.");return}
- if(item&&confirm(`Excluir ${item.name}?`)){data[listName]=list.filter(x=>x.id!==id);save();render();showToast("Cadastro excluído.")}
- }
+$("logout").addEventListener("click",async()=>{await db.auth.signOut();location.reload();});
+$("entityForm").addEventListener("submit",saveEntity);
+$("closeModal").onclick=$("cancelModal").onclick=()=>$("modal").close();
+$("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-page]");if(b)setPage(b.dataset.page);});
+document.addEventListener("click",async e=>{
+  const newBtn=e.target.closest("[data-new]"),edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]"),cancel=e.target.closest("[data-cancel]");
+  if(newBtn){openForm(newBtn.dataset.new);return;}
+  if(edit){openForm(edit.dataset.edit,edit.dataset.id);return;}
+  if(cancel){
+    const a=find(state.appointments,cancel.dataset.cancel);
+    if(a&&confirm("Cancelar esta consulta?")){
+      const {error}=await db.from("appointments").update({status:"Cancelada"}).eq("id",a.id);
+      if(error)$("appError").textContent=error.message;else await loadData();
+    }return;
+  }
+  if(del){
+    const type=del.dataset.delete,table={patient:"patients",doctor:"doctors",clinic:"clinics"}[type];
+    if(confirm("Excluir este cadastro?")){
+      const {error}=await db.from(table).delete().eq("id",del.dataset.id);
+      if(error)$("appError").textContent=error.message;else await loadData();
+    }
+  }
 });
-$("clearSamples").addEventListener("click",()=>{
- const has=data.appointments.some(x=>x.demo)||data.patients.some(x=>x.demo)||data.doctors.some(x=>x.demo)||data.clinics.some(x=>x.demo);
- if(!has){showToast("Não há exemplos para remover.");return}
- if(!confirm("Remover os registros de exemplo e manter seus cadastros?"))return;
- data.appointments=data.appointments.filter(x=>!x.demo);data.patients=data.patients.filter(x=>!x.demo);data.doctors=data.doctors.filter(x=>!x.demo);data.clinics=data.clinics.filter(x=>!x.demo);save();render();showToast("Exemplos removidos.")
-});
+["searchAppointments","monthFilter","searchPatients","searchDoctors"].forEach(id=>$(id).addEventListener("input",render));
+if(!SUPABASE_URL.includes("COLE_")&&!SUPABASE_ANON_KEY.includes("COLE_")){
+  db.auth.getSession().then(async({data})=>{
+    if(data.session){
+      try{
+        const {data:profile,error}=await db.from("profiles").select("*").eq("id",data.session.user.id).single();
+        if(error||!profile)throw new Error("Perfil não encontrado no Supabase.");
+        state.user=data.session.user;state.profile=profile;$("loginScreen").hidden=true;$("appScreen").hidden=false;$("monthFilter").value=localMonth();await loadData();setPage("appointments");
+      }catch(err){$("loginError").textContent=err.message;}
+    }
+  });
+}
 })();
 </script>
 </body>
