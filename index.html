@@ -68,7 +68,7 @@ dialog{width:min(580px,calc(100% - 24px));max-height:90vh;border:0;border-radius
 (() => {
 "use strict";
 const SUPABASE_URL = "https://hjpesatdtjmjumcyhjwh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6ImhqcGVzYXRkdGptanVtY3loandoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MDc0ODgsImV4cCI6MjEwNzA4MzQ4OH0.BaIItaTfCNceDfuIfgEEkWp1k8fT50yqgfqygKU2JSk";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqcGVzYXRkdGptanVtY3loandoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MDc0ODgsImV4cCI6MjEwNzA4MzQ4OH0.BaIItaTfCNceDfuIfgEEkWp1k8fT50yqgfqygKU2JSk";
 const $ = id => document.getElementById(id);
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const state = {user:null,profile:null,clinics:[],patients:[],doctors:[],appointments:[],profiles:[],editing:null};
