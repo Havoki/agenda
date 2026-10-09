@@ -6,8 +6,10 @@
 <title>Agenda Clínica</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{font:14px Inter,system-ui,sans-serif;color:#1b2540;background:#f4f6fb;--blue:#5268e8;--line:#e7eaf1;--muted:#778198;--white:#fff}*{box-sizing:border-box}body{margin:0;background:#f4f6fb}button,input,select,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#fff;color:#46536b;border-radius:9px;padding:9px 12px;font-weight:650}button:hover{background:#f7f8fc}.primary{background:var(--blue);border-color:var(--blue);color:white}.primary:hover{background:#4056d0}.danger{color:#b74653}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 10%,#e3e9ff,transparent 35%),#f4f6fb}.login-card,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:16px}.login-card{width:min(420px,100%);padding:30px;box-shadow:0 20px 65px #22345a12}.login h1{font-size:23px;margin:0 0 5px}.muted,.login p{color:var(--muted);font-size:12px}.login p{margin:0 0 20px}.login label,.field-label{display:block;font-weight:650;font-size:12px;color:#536078;margin-bottom:6px}.input{width:100%;border:1px solid #dfe4ed;border-radius:9px;padding:10px 11px;background:#fff;color:#1b2540;outline:none}.input:focus{border-color:#8c9bf2;box-shadow:0 0 0 3px #5268e817}.login .input{margin-bottom:14px}.error{color:#b74653;min-height:18px;font-size:12px}.app{max-width:1200px;margin:auto;padding:22px 18px 50px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.top h1{font-size:19px;margin:0}.top p{margin:4px 0 0}.top-right,.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.pill{font-size:11px;color:#4356c5;background:#edf0ff;padding:8px 10px;border-radius:20px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px}.stat{padding:13px 15px}.stat small{color:var(--muted);font-size:11px}.stat strong{display:block;font-size:22px;margin-top:4px}.panel{overflow:hidden}.tabs{display:flex;gap:4px;padding:10px 13px;border-bottom:1px solid var(--line);overflow:auto}.tab{border:0;background:transparent;white-space:nowrap;color:#657187}.tab.active{background:#edf0ff;color:#4057d1}.content{padding:17px}.page[hidden],.app[hidden],.login[hidden]{display:none!important}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.heading h2{font-size:16px;margin:0}.heading p{margin:4px 0 0}.filters{display:grid;grid-template-columns:1fr 165px;gap:9px;margin-bottom:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:760px}th{text-align:left;background:#fafbfe;color:#8490a4;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:11px}td{padding:10px;border-top:1px solid var(--line);font-size:11px;vertical-align:middle}td small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#eef1f7;color:#59667c;font-size:9px;font-weight:700}.Agendada{background:#fff2d9;color:#98640d}.Confirmada{background:#e5f6ed;color:#218151}.Reagendado{background:#e6f3ff;color:#2870a8}.Concluída{background:#edf0ff;color:#4e63cb}.Cancelada{background:#ffeaec;color:#b74653}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;padding:13px}.card h3{font-size:12px;margin:0}.card p{font-size:11px;color:var(--muted);line-height:1.5;margin:5px 0 0}.empty{padding:23px;text-align:center;color:var(--muted);font-size:12px}.note{font-size:11px;color:var(--muted);margin:10px 0}.mini{padding:6px 8px;font-size:10px}dialog{width:min(580px,calc(100% - 24px));max-height:90vh;border:0;border-radius:15px;padding:0;box-shadow:0 24px 80px #07102755}dialog::backdrop{background:#18223877}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}.modal-head h2{font-size:16px;margin:0}.form{padding:16px 18px 18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.group.full{grid-column:1/-1}.group textarea{resize:vertical;min-height:65px}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1b2540;color:white;padding:10px 14px;border-radius:9px;font-size:12px;display:none;z-index:8}.toast.show{display:block}.logo{width:36px;height:36px;object-fit:cover;border-radius:9px;vertical-align:middle;margin-right:8px}
-@media(max-width:650px){.app{padding:13px 10px 30px}.top{align-items:flex-start}.top-right{flex-direction:column;align-items:flex-end}.stats{gap:6px}.stat{padding:10px}.stat strong{font-size:18px}.content{padding:12px 10px}.heading{align-items:flex-start;flex-direction:column}.heading .actions{width:100%}.heading .actions button{flex:1}.filters{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.group.full{grid-column:auto}}
+:root{font:14px Inter,system-ui,sans-serif;color:#1b2540;background:#f4f6fb;--blue:#5268e8;--line:#e7eaf1;--muted:#778198;--white:#fff}*{box-sizing:border-box}body{margin:0;background:#f4f6fb}button,input,select,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#fff;color:#46536b;border-radius:9px;padding:9px 12px;font-weight:650}button:hover{background:#f7f8fc}.primary{background:var(--blue);border-color:var(--blue);color:white}.primary:hover{background:#4056d0}.danger{color:#b74653}.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 10%,#e3e9ff,transparent 35%),#f4f6fb}.login-card,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:16px}.login-card{width:min(420px,100%);padding:30px;box-shadow:0 20px 65px #22345a12}.login h1{font-size:23px;margin:0 0 5px}.muted,.login p{color:var(--muted);font-size:12px}.login p{margin:0 0 20px}.login label,.field-label{display:block;font-weight:650;font-size:12px;color:#536078;margin-bottom:6px}.input{width:100%;border:1px solid #dfe4ed;border-radius:9px;padding:10px 11px;background:#fff;color:#1b2540;outline:none}.input:focus{border-color:#8c9bf2;box-shadow:0 0 0 3px #5268e817}.login .input{margin-bottom:14px}.error{color:#b74653;min-height:18px;font-size:12px}.app{max-width:1200px;margin:auto;padding:22px 18px 50px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.top h1{font-size:19px;margin:0}.top p{margin:4px 0 0}.top-right,.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.pill{font-size:11px;color:#4356c5;background:#edf0ff;padding:8px 10px;border-radius:20px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px}.stat{padding:13px 15px}.stat small{color:var(--muted);font-size:11px}.stat strong{display:block;font-size:22px;margin-top:4px}.panel{overflow:hidden}.tabs{display:flex;gap:4px;padding:10px 13px;border-bottom:1px solid var(--line);overflow:auto}.tab{border:0;background:transparent;white-space:nowrap;color:#657187}.tab.active{background:#edf0ff;color:#4057d1}.content{padding:17px}.page[hidden],.app[hidden],.login[hidden]{display:none!important}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}.heading h2{font-size:16px;margin:0}.heading p{margin:4px 0 0}.filters{display:grid;grid-template-columns:1fr 165px;gap:9px;margin-bottom:12px}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:760px}th{text-align:left;background:#fafbfe;color:#8490a4;font-size:9px;letter-spacing:.05em;text-transform:uppercase;padding:11px}td{padding:10px;border-top:1px solid var(--line);font-size:11px;vertical-align:middle}td small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#eef1f7;color:#59667c;font-size:9px;font-weight:700}.Agendada{background:#fff2d9;color:#98640d}.Confirmada{background:#e5f6ed;color:#218151}.Reagendado{background:#e6f3ff;color:#2870a8}.Concluída{background:#edf0ff;color:#4e63cb}.Cancelada{background:#ffeaec;color:#b74653}.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:11px;padding:13px}.card h3{font-size:12px;margin:0}.card p{font-size:11px;color:var(--muted);line-height:1.5;margin:5px 0 0}.empty{padding:23px;text-align:center;color:var(--muted);font-size:12px}.note{font-size:11px;color:var(--muted);margin:10px 0}.mini{padding:6px 8px;font-size:10px}
+.calendar{border:1px solid var(--line);border-radius:12px;margin:0 0 14px;background:#fff;overflow:hidden}.calendar-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px}.calendar-head h3{font-size:14px;margin:0}.calendar-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.calendar-actions{display:flex;align-items:center;gap:7px}.calendar-month{font-size:12px;font-weight:700;min-width:120px;text-align:center;text-transform:capitalize}.calendar-content{padding:0 12px 12px}.calendar-content[hidden]{display:none}.calendar-weekdays,.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.calendar-weekdays{margin-bottom:5px}.calendar-weekdays span{text-align:center;color:var(--muted);font-size:10px;padding:5px}.calendar-day,.calendar-blank{min-height:54px}.calendar-day{border:1px solid var(--line);border-radius:9px;background:#fff;padding:6px;text-align:left;color:#46536b}.calendar-day:hover{border-color:#9ba8f5;background:#f7f8ff}.calendar-day.has-appointments{background:#edf0ff;border-color:#cbd2ff;color:#4057d1}.calendar-day.selected{outline:2px solid var(--blue);outline-offset:1px}.calendar-day strong{font-size:12px}.calendar-day small{display:block;margin-top:4px;font-size:9px;color:var(--muted)}.calendar-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;color:var(--muted);font-size:10px}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#5268e8;margin-right:5px}.calendar-info,.calendar-selection{font-size:10px;color:var(--muted);margin:8px 0 0}.calendar-selection{font-size:11px;color:#536078}.calendar-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+dialog{width:min(580px,calc(100% - 24px));max-height:90vh;border:0;border-radius:15px;padding:0;box-shadow:0 24px 80px #07102755}dialog::backdrop{background:#18223877}.modal-head{display:flex;justify-content:space-between;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}.modal-head h2{font-size:16px;margin:0}.form{padding:16px 18px 18px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.group.full{grid-column:1/-1}.group textarea{resize:vertical;min-height:65px}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1b2540;color:white;padding:10px 14px;border-radius:9px;font-size:12px;display:none;z-index:8}.toast.show{display:block}.logo{width:36px;height:36px;object-fit:cover;border-radius:9px;vertical-align:middle;margin-right:8px}.clinic-logo-preview{width:52px;height:52px;object-fit:cover;border:1px solid var(--line);border-radius:10px;background:#f4f6fb}.clinic-logo-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.clinic-logo-tools input{max-width:100%}
+@media(max-width:650px){.app{padding:13px 10px 30px}.top{align-items:flex-start}.top-right{flex-direction:column;align-items:flex-end}.stats{gap:6px}.stat{padding:10px}.stat strong{font-size:18px}.content{padding:12px 10px}.heading{align-items:flex-start;flex-direction:column}.heading .actions{width:100%}.heading .actions button{flex:1}.filters{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.group.full{grid-column:auto}.calendar-head{align-items:flex-start;flex-direction:column}.calendar-actions{width:100%;justify-content:space-between}.calendar-month{min-width:0}.calendar-day,.calendar-blank{min-height:44px}.calendar-day{padding:5px 3px}.calendar-day small{font-size:8px}.calendar-weekdays span{font-size:9px;padding:4px 0}}
 </style>
 </head>
 <body>
@@ -28,6 +30,18 @@
     </nav>
     <section class="content page" id="appointmentsPage">
       <div class="heading"><div><h2>Consultas</h2><p class="muted">Agendamentos da clínica vinculada à sua conta.</p></div><button class="primary" data-new="appointment">＋ Nova consulta</button></div>
+      <section class="calendar" aria-label="Calendário de consultas">
+        <div class="calendar-head"><div><h3>Calendário de consultas</h3><p>Dias com consultas ficam destacados. Selecione uma data para filtrar a lista.</p></div>
+          <div class="calendar-actions"><button type="button" id="calendarPrev" aria-label="Mês anterior">‹</button><strong class="calendar-month" id="calendarMonth"></strong><button type="button" id="calendarNext" aria-label="Próximo mês">›</button><button type="button" id="calendarToggle" aria-expanded="true">Ocultar calendário</button></div>
+        </div>
+        <div class="calendar-content" id="calendarContent">
+          <div class="calendar-weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+          <div class="calendar-grid" id="calendarDays"></div>
+          <div class="calendar-legend"><span><i class="legend-dot"></i>Dia com consulta ativa</span><span>Dias sem marcação aparecem sem destaque</span></div>
+          <div class="calendar-footer"><p class="calendar-info">Dias sem consultas cadastradas não confirmam disponibilidade; confira os horários de atendimento da clínica.</p><button type="button" class="mini" id="clearCalendarDate" hidden>Limpar seleção</button></div>
+          <p class="calendar-selection" id="calendarSelection">Selecione um dia para filtrar as consultas.</p>
+        </div>
+      </section>
       <div class="filters"><input class="input" id="searchAppointments" placeholder="Buscar paciente, médico, clínica ou status"><input class="input" type="month" id="monthFilter" aria-label="Filtrar por mês"></div>
       <div class="table-wrap"><table><thead><tr><th>Paciente</th><th>Data e hora</th><th>Especialidade</th><th>Médico</th><th>Clínica</th><th>Status</th><th>Ações</th></tr></thead><tbody id="appointmentRows"></tbody></table><div class="empty" id="appointmentEmpty" hidden>Nenhuma consulta encontrada.</div></div>
     </section>
@@ -53,22 +67,22 @@
 <script>
 (() => {
 "use strict";
-
-/* Troque estes dois valores pelos dados públicos do seu projeto Supabase. */
 const SUPABASE_URL = "https://hjpesatdtjmjumcyhjwh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqcGVzYXRkdGptanVtY3loandoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MDc0ODgsImV4cCI6MjEwNzA4MzQ4OH0.BaIItaTfCNceDfuIfgEEkWp1k8fT50yqgfqygKU2JSk";
-
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6ImhqcGVzYXRkdGptanVtY3loandoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1MDc0ODgsImV4cCI6MjEwNzA4MzQ4OH0.BaIItaTfCNceDfuIfgEEkWp1k8fT50yqgfqygKU2JSk";
 const $ = id => document.getElementById(id);
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-const state = { user:null, profile:null, clinics:[], patients:[], doctors:[], appointments:[], profiles:[], editing:null };
+const state = {user:null,profile:null,clinics:[],patients:[],doctors:[],appointments:[],profiles:[],editing:null};
+let selectedCalendarDate="";
 const esc = v => String(v ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const isMaster = () => state.profile?.role === "master";
 const find = (arr,id) => arr.find(x=>x.id===id);
 const clinicName = id => find(state.clinics,id)?.name || "Clínica";
 const patientName = id => find(state.patients,id)?.name || "Paciente";
 const doctorName = id => find(state.doctors,id)?.name || "Médico";
-const localMonth = () => {const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;};
+const pad = n => String(n).padStart(2,"0");
+const localMonth = () => {const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;};
 const currentClinic = () => state.profile?.clinic_id || "";
+function dateKey(value){const d=new Date(value);if(Number.isNaN(d.getTime()))return "";return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
 function toast(text){const el=$("toast");el.textContent=text;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2600);}
 function options(items,selected="",label="Selecione"){return `<option value="">${label}</option>`+items.map(x=>`<option value="${esc(x.id)}" ${x.id===selected?"selected":""}>${esc(x.name)}</option>`).join("");}
 function field(label,name,value="",type="text",required=false,full=false){return `<div class="group ${full?"full":""}"><label class="field-label" for="f_${name}">${label}${required?" *":""}</label><input class="input" id="f_${name}" name="${name}" type="${type}" value="${esc(value)}" ${required?"required":""}></div>`;}
@@ -90,13 +104,33 @@ async function loadData(){
   $("userInfo").textContent=state.profile?.name||state.user?.email||"";
   render();
 }
+function renderCalendar(){
+  const value=$("monthFilter").value||localMonth(),parts=value.split("-").map(Number),year=parts[0],month=parts[1];
+  if(!year||!month)return;
+  const first=new Date(year,month-1,1),daysInMonth=new Date(year,month,0).getDate();
+  $("calendarMonth").textContent=first.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+  const counts={};
+  state.appointments.forEach(a=>{const key=dateKey(a.scheduled_at);if(key.startsWith(value)&&a.status!=="Cancelada")counts[key]=(counts[key]||0)+1;});
+  let html="";
+  for(let i=0;i<first.getDay();i++)html+='<span class="calendar-blank" aria-hidden="true"></span>';
+  for(let day=1;day<=daysInMonth;day++){
+    const key=`${value}-${pad(day)}`,count=counts[key]||0;
+    const classes=["calendar-day",count?"has-appointments":"",selectedCalendarDate===key?"selected":""].filter(Boolean).join(" ");
+    html+=`<button type="button" class="${classes}" data-calendar-date="${key}" aria-label="${day} de ${first.toLocaleDateString("pt-BR",{month:"long"})}, ${count?count+" consulta(s) ativa(s)":"sem consulta ativa cadastrada"}"><strong>${day}</strong>${count?`<small>${count} consulta${count===1?"":"s"}</small>`:""}</button>`;
+  }
+  const cells=first.getDay()+daysInMonth;for(let i=cells;i%7!==0;i++)html+='<span class="calendar-blank" aria-hidden="true"></span>';
+  $("calendarDays").innerHTML=html;
+  $("clearCalendarDate").hidden=!selectedCalendarDate;
+  $("calendarSelection").textContent=selectedCalendarDate
+    ?`${new Date(`${selectedCalendarDate}T12:00:00`).toLocaleDateString("pt-BR")}: ${counts[selectedCalendarDate]||0} consulta(s) ativa(s). A lista está filtrada para este dia.`
+    :"Selecione um dia para filtrar as consultas.";
+}
 function render(){
   $("clinicsTab").hidden=!isMaster();$("usersTab").hidden=!isMaster();
   const q=$("searchAppointments").value.trim().toLocaleLowerCase("pt-BR"),month=$("monthFilter").value;
   const rows=state.appointments.filter(a=>{
-    const p=patientName(a.patient_id),d=doctorName(a.doctor_id),c=clinicName(a.clinic_id);
-    const date=String(a.scheduled_at||"").slice(0,7);
-    return(!month||month===date)&&`${p} ${d} ${c} ${a.status||""} ${a.specialty||""}`.toLocaleLowerCase("pt-BR").includes(q);
+    const p=patientName(a.patient_id),d=doctorName(a.doctor_id),c=clinicName(a.clinic_id),date=dateKey(a.scheduled_at);
+    return(!month||month===date.slice(0,7))&&(!selectedCalendarDate||date===selectedCalendarDate)&&`${p} ${d} ${c} ${a.status||""} ${a.specialty||""}`.toLocaleLowerCase("pt-BR").includes(q);
   }).sort((a,b)=>String(a.scheduled_at).localeCompare(String(b.scheduled_at)));
   $("appointmentRows").innerHTML=rows.map(a=>{
     const dt=new Date(a.scheduled_at);
@@ -119,6 +153,7 @@ function render(){
   $("statMonth").textContent=state.appointments.filter(a=>String(a.scheduled_at||"").slice(0,7)===localMonth()&&a.status!=="Cancelada").length;
   $("statUpcoming").textContent=state.appointments.filter(a=>new Date(a.scheduled_at)>=today&&["Agendada","Confirmada","Reagendado"].includes(a.status)).length;
   $("statPatients").textContent=state.patients.length;
+  renderCalendar();
 }
 function openForm(type,id=""){
   const map={appointment:"appointments",patient:"patients",doctor:"doctors",clinic:"clinics"};
@@ -135,13 +170,13 @@ function openForm(type,id=""){
     html=field("Nome do médico","name",old.name||"","text",true)+field("Especialidade","specialty",old.specialty||"","text",true)+field("Telefone profissional","phone",old.phone||"","tel");
     html+=isMaster()?selectField("Clínica","clinic_id",state.clinics,old.clinic_id||""):selectField("Clínica","clinic_id",state.clinics,currentClinic());
   }else if(type==="clinic"){
-    html=field("Nome da clínica","name",old.name||"","text",true)+field("Telefone","phone",old.phone||"","tel")+field("Endereço","address",old.address||"","text",false,true)+field("Logo (URL)","logo",old.logo||"","url",false,true);
+    html=field("Nome da clínica","name",old.name||"","text",true)+field("Telefone","phone",old.phone||"","tel")+field("Endereço","address",old.address||"","text",false,true)+`<div class="group full"><label class="field-label" for="clinicLogoFile">Logo da clínica</label><div class="clinic-logo-tools"><img class="clinic-logo-preview" id="clinicLogoPreview" src="${esc(old.logo||"")}" alt="Prévia do logo" ${old.logo?"":"hidden"}><input class="input" type="file" id="clinicLogoFile" accept="image/*"><button type="button" id="removeClinicLogo">Remover imagem</button></div><input type="hidden" name="logo" id="clinicLogoValue" value="${esc(old.logo||"")}"><small class="note">Selecione uma imagem de até 1 MB.</small></div>`;
   }else if(type==="appointment"){
     if(!state.patients.length||!state.doctors.length||!state.clinics.length){toast("Cadastre clínica, paciente e médico antes de agendar.");return;}
     const clinicId=old.clinic_id||currentClinic()||state.clinics[0].id;
     const dt=old.scheduled_at?new Date(old.scheduled_at):new Date();
-    const date=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
-    const time=`${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}`;
+    const date=`${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}`;
+    const time=`${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
     if(isMaster())html+=selectField("Clínica","clinic_id",state.clinics,clinicId);
     else html+=`<input type="hidden" name="clinic_id" value="${esc(currentClinic())}">`;
     html+=selectField("Paciente","patient_id",state.patients.filter(p=>!p.clinic_id||p.clinic_id===clinicId),old.patient_id||"");
@@ -152,6 +187,19 @@ function openForm(type,id=""){
     html=field("Nome","name","","text",true)+field("E-mail","email","","email",true)+field("Senha inicial (mínimo 8 caracteres)","password","","password",true)+selectField("Clínica","clinic_id",state.clinics,"");
   }
   $("formFields").innerHTML=html;
+  if(type==="clinic"){
+    const fileInput=$("clinicLogoFile"),logoValue=$("clinicLogoValue"),preview=$("clinicLogoPreview"),submitButton=$("entityForm").querySelector('button[type="submit"]');
+    fileInput.addEventListener("change",()=>{
+      const file=fileInput.files[0];if(!file)return;
+      if(!file.type.startsWith("image/")||file.size>1024*1024){toast("Escolha uma imagem de até 1 MB.");fileInput.value="";return;}
+      submitButton.disabled=true;
+      const reader=new FileReader();
+      reader.onload=()=>{logoValue.value=String(reader.result);preview.src=String(reader.result);preview.hidden=false;submitButton.disabled=false;};
+      reader.onerror=()=>{toast("Não foi possível ler a imagem.");submitButton.disabled=false;fileInput.value="";};
+      reader.readAsDataURL(file);
+    });
+    $("removeClinicLogo").addEventListener("click",()=>{logoValue.value="";preview.removeAttribute("src");preview.hidden=true;fileInput.value="";});
+  }
   if(type==="appointment"&&isMaster()){
     const clinic=$("entityForm").elements.namedItem("clinic_id");
     clinic.addEventListener("change",()=>{
@@ -189,7 +237,6 @@ async function saveEntity(e){
 }
 $("loginForm").addEventListener("submit",async e=>{
   e.preventDefault();$("loginError").textContent="";
-  if(SUPABASE_URL.includes("COLE_")||SUPABASE_ANON_KEY.includes("COLE_")){$("loginError").textContent="Preencha SUPABASE_URL e SUPABASE_ANON_KEY no início do código.";return;}
   const {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
   if(error){$("loginError").textContent=error.message;return;}
   try{
@@ -204,6 +251,30 @@ $("logout").addEventListener("click",async()=>{await db.auth.signOut();location.
 $("entityForm").addEventListener("submit",saveEntity);
 $("closeModal").onclick=$("cancelModal").onclick=()=>$("modal").close();
 $("tabs").addEventListener("click",e=>{const b=e.target.closest("[data-page]");if(b)setPage(b.dataset.page);});
+$("calendarToggle").addEventListener("click",()=>{
+  const content=$("calendarContent"),willHide=!content.hidden;
+  content.hidden=willHide;
+  $("calendarToggle").textContent=willHide?"Mostrar calendário":"Ocultar calendário";
+  $("calendarToggle").setAttribute("aria-expanded",String(!willHide));
+});
+$("calendarPrev").addEventListener("click",()=>{
+  const [y,m]=$("monthFilter").value.split("-").map(Number),d=new Date(y,m-2,1);
+  $("monthFilter").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+  selectedCalendarDate="";render();
+});
+$("calendarNext").addEventListener("click",()=>{
+  const [y,m]=$("monthFilter").value.split("-").map(Number),d=new Date(y,m,1);
+  $("monthFilter").value=`${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+  selectedCalendarDate="";render();
+});
+$("calendarDays").addEventListener("click",e=>{
+  const day=e.target.closest("[data-calendar-date]");if(!day)return;
+  selectedCalendarDate=selectedCalendarDate===day.dataset.calendarDate?"":day.dataset.calendarDate;
+  render();
+});
+$("clearCalendarDate").addEventListener("click",()=>{selectedCalendarDate="";render();});
+$("monthFilter").addEventListener("input",()=>{selectedCalendarDate="";render();});
+["searchAppointments","searchPatients","searchDoctors"].forEach(id=>$(id).addEventListener("input",render));
 document.addEventListener("click",async e=>{
   const newBtn=e.target.closest("[data-new]"),edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]"),cancel=e.target.closest("[data-cancel]");
   if(newBtn){openForm(newBtn.dataset.new);return;}
@@ -223,14 +294,15 @@ document.addEventListener("click",async e=>{
     }
   }
 });
-["searchAppointments","monthFilter","searchPatients","searchDoctors"].forEach(id=>$(id).addEventListener("input",render));
 if(!SUPABASE_URL.includes("COLE_")&&!SUPABASE_ANON_KEY.includes("COLE_")){
   db.auth.getSession().then(async({data})=>{
     if(data.session){
       try{
         const {data:profile,error}=await db.from("profiles").select("*").eq("id",data.session.user.id).single();
         if(error||!profile)throw new Error("Perfil não encontrado no Supabase.");
-        state.user=data.session.user;state.profile=profile;$("loginScreen").hidden=true;$("appScreen").hidden=false;$("monthFilter").value=localMonth();await loadData();setPage("appointments");
+        state.user=data.session.user;state.profile=profile;
+        $("loginScreen").hidden=true;$("appScreen").hidden=false;$("monthFilter").value=localMonth();
+        await loadData();setPage("appointments");
       }catch(err){$("loginError").textContent=err.message;}
     }
   });
