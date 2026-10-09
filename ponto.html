@@ -75,7 +75,7 @@ button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:10px 14px;
 <div id="toast"></div>
 
 <script>
-const MODEL="https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
+const MODEL="https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let db={companies:[],employees:[],punches:[]},stream=null,enrollStream=null,scanTimer=null,models=false,match=null,faceTarget=null;
 const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();
@@ -110,14 +110,52 @@ function saveCompany(){let n=$("#compName").value.trim();if(!n)return toast("Inf
 function removeCompany(id){if(!confirm("Excluir esta empresa e seus funcionários?"))return;let ids=db.employees.filter(x=>x.company===id).map(x=>x.id);db.companies=db.companies.filter(x=>x.id!==id);db.employees=db.employees.filter(x=>x.company!==id);db.punches=db.punches.filter(x=>!ids.includes(x.employee));save();render()}
 function clearExamples(){if(confirm("Remover os dados de exemplo?")){localStorage.removeItem("fp_data");localStorage.removeItem("fp_seed");db={companies:[],employees:[],punches:[]};render();toast("Exemplos removidos")}}
 async function loadModels(){if(models)return;$("#camStatus").textContent="Carregando modelos faciais...";await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL);await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL);await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL);models=true}
-async function camera(video){await loadModels();return navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false})}
+async function camera(video){
+if(!window.isSecureContext&&location.hostname!=="localhost"&&location.hostname!=="127.0.0.1")throw new Error("A câmera exige HTTPS. Abra o sistema pelo endereço HTTPS da Vercel.");
+if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error("Este navegador não disponibilizou acesso à câmera.");
+return navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false})
+}
 function stop(s){if(s)s.getTracks().forEach(x=>x.stop())}
-$("#startCam").onclick=async()=>{try{stream=await camera($("#video"));$("#video").srcObject=stream;$("#startCam").disabled=true;$("#stopCam").disabled=false;$("#camMsg").classList.add("hidden");$("#camStatus").className="notice ok";$("#camStatus").textContent="Câmera ativa. Procure um rosto cadastrado.";scanTimer=setInterval(scan,900)}catch(e){$("#camStatus").className="notice bad";$("#camStatus").textContent=e.name==="NotAllowedError"?"Permissão negada. Libere a câmera no cadeado do navegador.":"Erro: "+e.message}}
+$("#startCam").onclick=async()=>{
+try{
+stream=await camera($("#video"));
+$("#video").srcObject=stream;
+$("#startCam").disabled=true;
+$("#stopCam").disabled=false;
+$("#camMsg").classList.add("hidden");
+$("#camStatus").className="notice";
+$("#camStatus").textContent="Câmera aberta. Carregando reconhecimento facial...";
+await loadModels();
+$("#camStatus").className="notice ok";
+$("#camStatus").textContent="Câmera ativa. Procure um rosto cadastrado.";
+clearInterval(scanTimer);
+scanTimer=setInterval(scan,900);
+}catch(e){
+$("#camStatus").className="notice bad";
+$("#camStatus").textContent=e.name==="NotAllowedError"?"Permissão negada. Libere a câmera no cadeado do navegador.":e.name==="NotFoundError"?"Nenhuma câmera foi encontrada neste dispositivo.":e.name==="NotReadableError"?"A câmera está sendo usada por outro aplicativo.":"Erro ao abrir a câmera: "+e.message;
+}
+}
 $("#stopCam").onclick=()=>{stop(stream);stream=null;clearInterval(scanTimer);$("#startCam").disabled=false;$("#stopCam").disabled=true;$("#camMsg").classList.remove("hidden");$("#camMsg").textContent="Câmera desligada";$("#identified").innerHTML='<div class="empty">Aguardando câmera</div>';$("#confirm").classList.add("hidden")}
 async function scan(){if(!stream)return;let d=await faceapi.detectSingleFace($("#video"),new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();if(!d){$("#identified").innerHTML='<div class="empty">Nenhum rosto detectado</div>';$("#confirm").classList.add("hidden");match=null;return}let best=null,dist=1;db.employees.filter(x=>x.face&&x.consent).forEach(e=>{let z=faceapi.euclideanDistance(d.descriptor,new Float32Array(e.face));if(z<dist){dist=z;best=e}});if(best&&dist<.52){match=best;$("#identified").innerHTML=`<div class="notice ok"><b>${esc(best.name)}</b><br><span class="muted">${esc(company(best.company))} · confiança ${((1-dist)*100).toFixed(1)}%</span></div>`;$("#confirm").classList.remove("hidden")}else{match=null;$("#identified").innerHTML='<div class="notice">Rosto não reconhecido. Cadastre a biometria deste funcionário.</div>';$("#confirm").classList.add("hidden")}}
 $("#confirm").onclick=()=>{if(!match)return;let last=[...db.punches].filter(x=>x.employee===match.id&&x.at.slice(0,10)===today()).sort((a,b)=>b.at.localeCompare(a.at))[0],type=last?.type==="entrada"?"saida":"entrada";db.punches.push({id:uid(),employee:match.id,company:match.company,type,at:new Date().toISOString()});save();toast(type==="entrada"?"Entrada registrada":"Saída registrada");$("#confirm").classList.add("hidden");$("#identified").innerHTML='<div class="notice ok">Registro concluído.</div>';render()}
 function openFace(id){let e=db.employees.find(x=>x.id===id);if(!e.consent)return toast("Registre o consentimento antes da biometria");faceTarget=id;$("#facePerson").textContent="Funcionário: "+e.name;openModal("faceModal")}
-$("#startEnroll").onclick=async()=>{try{enrollStream=await camera($("#enrollVideo"));$("#enrollVideo").srcObject=enrollStream;$("#startEnroll").disabled=true;$("#capture").disabled=false;$("#enrollMsg").classList.add("hidden")}catch(e){toast("Erro ao abrir câmera: "+e.message)}}
+$("#startEnroll").onclick=async()=>{
+try{
+enrollStream=await camera($("#enrollVideo"));
+$("#enrollVideo").srcObject=enrollStream;
+$("#startEnroll").disabled=true;
+$("#capture").disabled=true;
+$("#enrollMsg").classList.add("hidden");
+toast("Câmera aberta. Carregando reconhecimento facial...");
+await loadModels();
+$("#capture").disabled=false;
+toast("Câmera pronta para capturar o rosto");
+}catch(e){
+$("#enrollMsg").classList.remove("hidden");
+$("#enrollMsg").textContent=e.name==="NotAllowedError"?"Permissão negada no navegador.":e.name==="NotFoundError"?"Nenhuma câmera foi encontrada.":"Erro: "+e.message;
+toast("Não foi possível abrir a câmera");
+}
+}
 $("#capture").onclick=async()=>{let d=await faceapi.detectSingleFace($("#enrollVideo"),new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptor();if(!d)return toast("Nenhum rosto detectado");let e=db.employees.find(x=>x.id===faceTarget);e.face=Array.from(d.descriptor);save();closeFace();toast("Biometria cadastrada");render()}
 function closeFace(){stop(enrollStream);enrollStream=null;$("#startEnroll").disabled=false;$("#capture").disabled=true;closeModal("faceModal")}
 $("#search").oninput=employees;$("#filterCompany").onchange=employees;$("#month").onchange=reports;$("#reportCompany").onchange=reports;$("#reportEmp").onchange=reports;
